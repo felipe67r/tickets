@@ -1,0 +1,7 @@
+{
+  "name": "sistema-atendimento",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

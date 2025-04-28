@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Voltar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Relatórios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-button expand="block" (click)="carregarRelatorio('diario')">Gerar Relatório Diário</ion-button>
+  <ion-button expand="block" (click)="carregarRelatorio('mensal')">Gerar Relatório Mensal</ion-button>
+
+  <div *ngIf="relatorio && relatorio.length > 0" class="relatorio-bloco">
+    <button class="close-button" (click)="fecharRelatorio()">x</button>
+    <h2 class="relatorio-titulo">Relatório {{ tipoRelatorio === 'diario' ? 'Diário' : 'Mensal' }}</h2>
+    <div class="relatorio-tabela">
+      <div class="relatorio-linha">
+        <div class="relatorio-celula">Senhas</div>
+        <div class="relatorio-celula">Emitidas</div>
+        <div class="relatorio-celula">Atendidas</div>
+      </div>
+      <div class="relatorio-linha">
+        <div class="relatorio-celula">Totais</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.total_emitidas }}</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.total_atendidas }}</div>
+      </div>
+      <div class="relatorio-linha">
+        <div class="relatorio-celula">Gerais</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.emitidas_sg }}</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.atendidas_sg }}</div>
+      </div>
+      <div class="relatorio-linha">
+        <div class="relatorio-celula">Prioritárias</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.emitidas_sp }}</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.atendidas_sp }}</div>
+      </div>
+      <div class="relatorio-linha">
+        <div class="relatorio-celula">Exames</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.emitidas_se }}</div>
+        <div class="relatorio-celula">{{ relatorio[0]?.atendidas_se }}</div>
+      </div>
+    </div>
+  </div>
+  <p *ngIf="!relatorio || relatorio.length === 0">Nenhum relatório gerado ainda.</p>
+</ion-content>

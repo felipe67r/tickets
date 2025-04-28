@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Voltar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Painel de Chamadas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-card class="custom-card" *ngFor="let senha of ultimasSenhas">
+      <ion-card-header>
+        <ion-card-title>Senha: {{ senha.senha || 'Dados indisponíveis' }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Guichê: {{ senha.guiche || 'Dados indisponíveis' }}</p>
+        <p>Hora Chamada: {{ senha.horaAtendimento || 'Dados indisponíveis' }}</p>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+  <p *ngIf="ultimasSenhas.length === 0" class="no-senhas-message">
+    Nenhuma senha chamada ainda.
+  </p>
+</ion-content>

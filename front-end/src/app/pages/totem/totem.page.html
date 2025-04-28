@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Voltar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Totem de Emissão de Senhas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-radio-group value="SP" (ionChange)="tipoSenha = $event.detail.value">
+      <ion-item>
+        <ion-label>Senha Prioritária</ion-label>
+        <ion-radio value="SP"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Senha Geral</ion-label>
+        <ion-radio value="SG"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Senha Exame</ion-label>
+        <ion-radio value="SE"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+
+  <ion-button expand="block" (click)="emitirSenha()">Emitir Senha</ion-button>
+
+  <div *ngIf="senhaEmitida" class="senha-emitida-card">
+    <h2>Senha Emitida:</h2>
+    <p>Senha: <strong>{{ senhaEmitida.senha }}</strong></p>
+    <p>Tipo: {{ senhaEmitida.tipo }}</p>
+  </div>
+
+  <div *ngIf="erro" class="error-message">
+    {{ erro }}
+  </div>
+</ion-content>
