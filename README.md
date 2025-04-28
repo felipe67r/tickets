@@ -26,9 +26,9 @@ Exemplo de configuração no `.env`:
 ```
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=admin
-DB_NAME=sistema
+DB_USER=usuario
+DB_PASSWORD=senha
+DB_NAME=banco
 ```
 
 ## Instruções para Rodar o Projeto
