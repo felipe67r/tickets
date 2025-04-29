@@ -83,3 +83,7 @@ O aplicativo estará disponível em `http://localhost:8100`.
 
 - Certifique-se de que o back-end esteja rodando antes de usar o front-end.
 - O front-end está configurado para se comunicar com o back-end através do proxy configurado no arquivo `front-end/proxy.conf.json`. Certifique-se de que o back-end esteja rodando na porta correta (3000 por padrão).
+## Integrantes
+- Adrielly Maria Quirino
+- Gilton Francisco de Souza Santos
+- Luis Felipe Silva Ribeiro
