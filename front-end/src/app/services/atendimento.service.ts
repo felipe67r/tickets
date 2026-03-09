@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class AtendimentoService {
-  private apiUrl = 'http://192.168.0.137:3000/api/atendimento'; // Certifique-se de que esta URL corresponde ao backend
+  private apiUrl = '/api/atendimento';
 
   constructor(private http: HttpClient) {}
 
