@@ -7,12 +7,12 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class AtendimentoService {
-  private apiUrl = 'http://localhost:3000/api/atendimento'; // Certifique-se de que esta URL corresponde ao backend
+  private apiUrl = 'http://192.168.0.137/api/atendimento'; // Certifique-se de que esta URL corresponde ao backend
 
   constructor(private http: HttpClient) {}
 
   chamarSenha(guiche: any): Observable<any> {
-    const guicheStr = String(guiche).trim(); // Converte para string e remove espaços
+    const guicheStr = String(guiche).trim();
 
     if (!guicheStr) {
       console.error('Guichê não informado ou inválido.');
@@ -31,7 +31,7 @@ export class AtendimentoService {
     return this.http.post(`${this.apiUrl}/encerrar`, {});
   }
 
-  liberarGuiche(guiche: number): Observable<any> { // Ajuste para aceitar número
+  liberarGuiche(guiche: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/liberar`, { guiche }).pipe(
       catchError((error) => {
         console.error('Erro ao liberar guichê:', error);
