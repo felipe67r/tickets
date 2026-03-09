@@ -1,12 +1,8 @@
-//senha.service.ts
-
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
+import { Observable, Subject, throwError, of } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
-import { throwError, of } from 'rxjs';
-import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -14,8 +10,8 @@ import { Subject } from 'rxjs';
 export class SenhaService {
   private atualizacaoSenhas = new Subject<void>();
 
-  private apiUrl = '/api/painel';
-  private apiUrlBase = '/api';
+  private apiUrl = `${environment.apiUrl}/api/painel`;
+  private apiUrlBase = `${environment.apiUrl}/api`;
   isRequestInProgress: any;
   private ultimasSenhas: any[] = [];
 
