@@ -4,7 +4,12 @@ import atendimentoRoutes from './routes/atendimento.routes.js';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true
+}));
 app.use(express.json());
 
 app.get('/debug-db', async (req, res) => {
