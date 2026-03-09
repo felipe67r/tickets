@@ -22,7 +22,7 @@ export class RelatoriosPage implements OnInit {
 
   carregarRelatorio(tipo: 'diario' | 'mensal') {
     this.tipoRelatorio = tipo; 
-    this.http.get<any[]>(`http://192.168.0.137/api/relatorio/${tipo}`).subscribe(
+    this.http.get<any[]>(`http://192.168.0.137:3000/api/relatorio/${tipo}`).subscribe(
       res => {
         
         this.relatorio = res.map(item => ({
