@@ -14,8 +14,8 @@ import { Subject } from 'rxjs';
 export class SenhaService {
   private atualizacaoSenhas = new Subject<void>();
 
-  private apiUrl = 'http://192.168.0.137:3000/api/painel';
-  private apiUrlBase = 'http://192.168.0.137:3000/api';
+  private apiUrl = '/api/painel';
+  private apiUrlBase = '/api';
   isRequestInProgress: any;
   private ultimasSenhas: any[] = [];
 
