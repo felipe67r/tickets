@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class AtendimentoService {
-  private apiUrl = '/api/atendimento';
+  private apiUrl = `${environment.apiUrl}/api/atendimento`;
 
   constructor(private http: HttpClient) {}
 
