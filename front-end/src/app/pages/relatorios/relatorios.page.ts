@@ -3,7 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { environment } from '../../environments/environment.ts';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-relatorios',
