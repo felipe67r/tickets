@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment.ts';
+import { environment } from '../../environments/environment';
 import { Observable, Subject, throwError, of } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 
