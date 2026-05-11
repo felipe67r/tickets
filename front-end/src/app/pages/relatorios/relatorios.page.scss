@@ -1,0 +1,77 @@
+.relatorio-bloco {
+  position: relative; // Essencial para o close-button absolute funcionar
+  border: 3px solid #4d8dff;
+  padding: 15px;
+  margin-top: 20px;
+  background-color: #353434; // Um preto levemente cinza fica mais moderno
+  color: white; 
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.relatorio-titulo {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #4d8dff; // Título combinando com a borda
+}
+
+.relatorio-tabela {
+  display: table;
+  width: 100%;
+  border-collapse: collapse; // Melhor que border-spacing para tabelas dark
+}
+
+.relatorio-linha {
+  display: table-row;
+  
+  &:first-child {
+    background-color: rgba(77, 141, 255, 0.1); // Destaque suave no cabeçalho
+    font-weight: bold;
+  }
+}
+
+.relatorio-celula {
+  display: table-cell;
+  padding: 12px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+// Linhas de divisão claras (para aparecerem no fundo escuro)
+.relatorio-linha:not(:last-child) .relatorio-celula {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.relatorio-celula:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.close-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  color: #ff4d4d; // Vermelho para o botão de fechar
+  z-index: 10;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// Estilo extra para o botão de download dentro da tabela
+ion-button {
+  --color: #4d8dff;
+  margin: 5;
+}
+
+.msg-vazia {
+  color: #666;
+  margin-top: 50px;
+}

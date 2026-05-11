@@ -1,0 +1,32 @@
+<ion-content class="ion-padding ion-text-center login-background">
+  <div class="login-wrapper">
+    <div class="logo-container">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <h1>Ticket System</h1>
+      <p>Gerenciamento de Backups</p>
+    </div>
+
+    <div class="login-box">
+      <ion-item lines="none" class="custom-input">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-input type="email" placeholder="E-mail" [(ngModel)]="user.email"></ion-input>
+      </ion-item>
+
+      <ion-item lines="none" class="custom-input">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-input type="password" placeholder="Senha" [(ngModel)]="user.password"></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" (click)="login()" class="btn-login">
+        ACESSAR SISTEMA
+      </ion-button>
+
+      <ion-button fill="clear" size="small" (click)="recuperarSenha()" class="btn-forgot">
+        Esqueci minha senha
+      </ion-button>
+      <ion-button fill="clear" size="small" (click)="criarConta()" style="--color: #4d8dff">
+  Não tem uma conta? Cadastre-se
+</ion-button>
+    </div>
+  </div>
+</ion-content>

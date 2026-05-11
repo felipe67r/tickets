@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Voltar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Relatórios e Sistema</ion-title>
+    
+    <ion-buttons slot="end">
+      <ion-button (click)="presentActionSheet()">
+        <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <div class="botoes-topo">
+    <ion-button expand="block" (click)="carregarRelatorio('diario')" color="secondary">
+      <ion-icon name="today-outline" slot="start"></ion-icon>
+      Gerar Relatório Diário
+    </ion-button>
+    <ion-button expand="block" (click)="carregarRelatorio('mensal')" color="secondary">
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      Gerar Relatório Mensal
+    </ion-button>
+  </div>
+
+  <div *ngIf="loading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Processando requisição...</p>
+  </div>
+
+  <div *ngIf="!loading && relatorio.length > 0 && tipoRelatorio !== 'backups'" class="relatorio-bloco">
+    <div class="header-bloco">
+      <h2 class="relatorio-titulo">Relatório {{ tipoRelatorio === 'diario' ? 'Diário' : 'Mensal' }}</h2>
+      <button class="close-button" (click)="fecharRelatorio()">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
+    </div>
+
+    <div class="relatorio-tabela">
+      <div class="relatorio-linha header-tabela">
+        <div class="relatorio-celula">Setor</div>
+        <div class="relatorio-celula">Emitidas</div>
+        <div class="relatorio-celula">Atendidas</div>
+      </div>
+      
+      <div class="relatorio-linha" *ngFor="let item of relatorio">
+        <div class="relatorio-celula"><strong>Geral</strong></div>
+        <div class="relatorio-celula">{{ item.total_emitidas }}</div>
+        <div class="relatorio-celula">{{ item.total_atendidas }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && tipoRelatorio === 'backups' && listaBackups.length > 0" class="relatorio-bloco">
+    <div class="header-bloco">
+      <h2 class="relatorio-titulo">Backups no Servidor</h2>
+      <button class="close-button" (click)="fecharRelatorio()">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
+    </div>
+
+    <div class="relatorio-tabela">
+      <div class="relatorio-linha header-tabela">
+        <div class="relatorio-celula">Data / Hora</div>
+        <div class="relatorio-celula">Tam.</div>
+        <div class="relatorio-celula">Ação</div>
+      </div>
+      
+      <div class="relatorio-linha" *ngFor="let backup of listaBackups">
+        <div class="relatorio-celula" style="font-size: 0.8em;">
+          {{ backup.data | date:'dd/MM/yy HH:mm' }}
+        </div>
+        <div class="relatorio-celula">{{ backup.tamanho }}</div>
+        <div class="relatorio-celula">
+          <ion-button size="small" fill="clear" (click)="baixarArquivo(backup.nome)" title="Baixar SQL">
+            <ion-icon name="cloud-download-outline" color="primary"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && relatorio.length === 0 && listaBackups.length === 0" class="ion-text-center ion-padding msg-vazia">
+    <ion-icon name="document-text-outline" style="font-size: 3em; color: #ccc;"></ion-icon>
+    <p>Selecione uma opção no menu ou gere um relatório acima.</p>
+  </div>
+
+</ion-content>

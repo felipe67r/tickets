@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Voltar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Área do Atendente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Número do Guichê:</ion-label>
+    <ion-input type="number" [(ngModel)]="guiche" required></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="chamarProxima()" [disabled]="!guiche">Chamar Próxima Senha</ion-button>
+
+  <div *ngFor="let senha of senhasChamadas" class="atendimento-bloco">
+    <button class="close-button" (click)="finalizarAtendimento(senha.senha)">x</button>
+    <h2>Senha Chamada:</h2>
+    <p>Número: <strong>{{ senha.senha }}</strong></p>
+    <p>Tipo: {{ senha.tipo }}</p>
+    <p>Dirija-se ao Guichê: {{ senha.guiche }}</p>
+    <p>Tempo atendimento: {{ senha.tempoRestante }}</p>
+  </div>
+  <div *ngIf="erroMensagem" class="error-message">
+    <p>{{ erroMensagem }}</p>
+  </div>
+</ion-content>
+
+<app-painel [painelLimpo]="painelLimpo"></app-painel>
+<ion-footer>
+  <div style="display: flex; justify-content: space-between; padding: 20px 10px;">
+    <ion-button size="small" style="font-size: calc(1em + 3px);" color="light" (click)="zerarSenhas()">Finalizar expediente</ion-button>
+  </div>
+</ion-footer>
