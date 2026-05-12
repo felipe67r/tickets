@@ -11,13 +11,17 @@ import { environment } from '../../../environments/environment';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
+  // IMPORTANTE: HttpClientModule deve estar aqui para o HttpClient funcionar em componentes standalone
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule]
 })
 export class LoginPage implements OnInit {
-  // Objeto que armazena os dados do formulário
-  user = { email: '', password: '' };
   
-  // Variável para guardar o destino pretendido antes do login
+  // Objeto com os mesmos nomes usados no seu HTML (email e password)
+  user = { 
+    email: '', 
+    password: '' 
+  };
+  
   returnUrl: string = '/home';
 
   constructor(
@@ -29,36 +33,33 @@ export class LoginPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Quando a página carrega, verifica se o AuthGuard passou um destino no URL
-    // Exemplo: /login?returnUrl=/relatorios
+    // Captura o destino caso o AuthGuard tenha redirecionado para cá
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
   }
 
   async login() {
-    // 1. Validação de campos vazios
+    // 1. Validação simples
     if (!this.user.email || !this.user.password) {
       this.mostrarToast('Por favor, preencha todos os campos.');
       return;
     }
 
-    // 2. Lógica para o ADMIN Local (Acesso rápido para testes)
+    // 2. Atalho para testes (Admin)
     if (this.user.email === 'admin' && this.user.password === '123') {
       sessionStorage.setItem('usuarioLogado', 'true');
-      console.log('Login Admin local sucesso! Redirecionando para:', this.returnUrl);
-      
-      // Navega para a página que o utilizador tentou aceder originalmente
       this.navCtrl.navigateRoot(this.returnUrl);
       return;
     }
 
-    // 3. Lógica de Login via API (Servidor)
+    // 3. Login oficial via API
     this.http.post(`${environment.apiUrl}/api/auth/login`, this.user).subscribe({
       next: (res: any) => {
-        // Guarda o estado de login para o AuthGuard e o Token para as requisições
         sessionStorage.setItem('usuarioLogado', 'true');
-        sessionStorage.setItem('userToken', res.token);
+        // Se a sua API retornar um token, guardamos aqui
+        if (res.token) {
+          sessionStorage.setItem('userToken', res.token);
+        }
         
-        console.log('Login API sucesso! Redirecionando para:', this.returnUrl);
         this.navCtrl.navigateRoot(this.returnUrl);
       },
       error: (err) => {
@@ -73,14 +74,21 @@ export class LoginPage implements OnInit {
       header: 'Recuperar Senha',
       subHeader: 'Enviaremos um código para o seu e-mail',
       inputs: [
-        { name: 'email', type: 'email', placeholder: 'Digite o seu e-mail' }
+        { 
+          name: 'email', 
+          type: 'email', 
+          placeholder: 'Digite o seu e-mail' 
+        }
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Enviar',
           handler: (data) => {
-            if (!data.email) return false;
+            if (!data.email) {
+              this.mostrarToast('Digite um e-mail válido.');
+              return false;
+            }
             this.http.post(`${environment.apiUrl}/api/auth/recuperar`, { email: data.email }).subscribe({
               next: () => this.mostrarToast('E-mail de recuperação enviado!'),
               error: () => this.mostrarToast('E-mail não encontrado.')
@@ -93,38 +101,9 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
 
-  async criarConta() {
-    const alert = await this.alertCtrl.create({
-      header: 'Nova Conta',
-      inputs: [
-        { name: 'email', type: 'email', placeholder: 'E-mail' },
-        { name: 'password', type: 'password', placeholder: 'Senha' },
-        { name: 'confirmPassword', type: 'password', placeholder: 'Confirme a Senha' }
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Cadastrar',
-          handler: (data) => {
-            if (!data.email || !data.password) {
-              this.mostrarToast('Preencha todos os campos!');
-              return false;
-            }
-            if (data.password !== data.confirmPassword) {
-              this.mostrarToast('As senhas não coincidem!');
-              return false;
-            }
-
-            this.http.post(`${environment.apiUrl}/api/auth/register`, data).subscribe({
-              next: () => this.mostrarToast('Conta criada com sucesso!'),
-              error: (err) => this.mostrarToast(err.error?.error || 'Erro ao criar conta.')
-            });
-            return true;
-          }
-        }
-      ]
-    });
-    await alert.present();
+  // Navega para a tela de cadastro
+  criarConta() {
+    this.navCtrl.navigateForward('/signup');
   }
 
   async mostrarToast(msg: string) {

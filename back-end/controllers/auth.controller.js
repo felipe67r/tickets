@@ -47,11 +47,11 @@ export const login = async (req, res) => {
 // --- FUNÇÃO DE REGISTRO (CRIAR CONTA) ---
 export const register = async (req, res) => {
   console.log("Corpo recebido no registro:", req.body); // ISSO AQUI É A CHAVE
-  const { email, password } = req.body;
+  const { nome, email, senha } = req.body;
 
   console.log(`[AUTH] Tentando registrar: ${email}`);
 
-  if (!email || !password) {
+  if (!email || !senha) {
     return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
   }
 
@@ -64,7 +64,7 @@ export const register = async (req, res) => {
 
     // 2. Criptografa a senha antes de salvar
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(senha, salt);
 
     // 3. Insere no banco (Coluna 'senha' com o Hash)
     await db.execute('INSERT INTO usuarios (email, senha) VALUES (?, ?)', [email, hashedPassword]);

@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Criar Conta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label position="floating">Nome Completo</ion-label>
+      <ion-input formControlName="nome" type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">E-mail</ion-label>
+      <ion-input formControlName="email" type="email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Senha</ion-label>
+      <ion-input formControlName="senha" type="password"></ion-input>
+    </ion-item>
+    
+    <ion-note color="danger" class="ion-margin-top" *ngIf="signupForm.get('senha')?.invalid && signupForm.get('senha')?.touched">
+      A senha deve ter 8+ caracteres, incluir Maiúscula, Minúscula, Número e Símbolo.
+    </ion-note>
+
+    <ion-button expand="block" type="submit" [disabled]="signupForm.invalid" class="ion-margin-top">
+      Cadastrar
+    </ion-button>
+  </form>
+</ion-content>

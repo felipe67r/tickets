@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule, NgIf, NgFor, DatePipe } from '@angular/common';
-import { IonicModule, ActionSheetController, AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { IonicModule, ActionSheetController, AlertController, LoadingController, ToastController, NavController } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
@@ -25,15 +25,21 @@ export class RelatoriosPage implements OnInit {
     private actionSheetCtrl: ActionSheetController, 
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private navCtrl: NavController // Adicionado para navegação
   ) {}
 
   ngOnInit() {}
 
   async presentActionSheet() {
     const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Backups e Restore',
+      header: 'Opções do Sistema', // Título mais abrangente
       buttons: [
+        {
+          text: 'Gerenciar Perfil', // NOVA OPÇÃO
+          icon: 'person-circle-outline',
+          handler: () => { this.navCtrl.navigateForward('/profile'); }
+        },
         {
           text: 'Restaurar e baixar backups',
           icon: 'list-outline',
@@ -47,7 +53,13 @@ export class RelatoriosPage implements OnInit {
         {
           text: 'Configurar Automação (Frequência)',
           icon: 'time-outline',
-          handler: () => { this.solicitarFrequencia(); } // Mudança aqui
+          handler: () => { this.solicitarFrequencia(); }
+        },
+        {
+          text: 'Sair do Sistema', // NOVA OPÇÃO
+          role: 'destructive',
+          icon: 'log-out-outline',
+          handler: () => { this.logout(); }
         },
         {
           text: 'Cancelar',
@@ -57,6 +69,13 @@ export class RelatoriosPage implements OnInit {
       ]
     });
     await actionSheet.present();
+  }
+
+  // --- LÓGICA DE NAVEGAÇÃO E SAÍDA ---
+
+  logout() {
+    sessionStorage.clear(); // Limpa tokens e dados de sessão
+    this.navCtrl.navigateRoot('/login'); // Redireciona para o login
   }
 
   // --- NOVO FLUXO DE AGENDAMENTO ---

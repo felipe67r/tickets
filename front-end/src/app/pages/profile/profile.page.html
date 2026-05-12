@@ -1,0 +1,58 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Meu Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="profile-container">
+    
+    <!-- Seção de Edição de Dados -->
+    <ion-list lines="full">
+      <ion-list-header>
+        <ion-label>Informações Pessoais</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label position="floating">Nome Completo</ion-label>
+        <ion-input type="text" [(ngModel)]="user.name" placeholder="Seu nome"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">E-mail</ion-label>
+        <ion-input type="email" [(ngModel)]="user.email" [disabled]="true"></ion-input>
+        <ion-note slot="helper">O e-mail não pode ser alterado.</ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Nova Senha (deixe em branco para manter)</ion-label>
+        <ion-input type="password" [(ngModel)]="user.password" placeholder="********"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <!-- Botão de Salvar Alterações -->
+    <div class="ion-margin-top">
+      <ion-button expand="block" (click)="updateAccount()">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Salvar Alterações
+      </ion-button>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Seção Perigosa: Exclusão -->
+    <div class="danger-zone">
+      <h3>Zona de Perigo</h3>
+      <p>Ao excluir sua conta, todos os seus dados serão removidos permanentemente.</p>
+      
+      <ion-button expand="block" color="danger" fill="outline" (click)="confirmDelete()">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Excluir Minha Conta
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>
