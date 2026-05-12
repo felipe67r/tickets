@@ -11,16 +11,23 @@ import { environment } from '../../../environments/environment';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  // IMPORTANTE: HttpClientModule deve estar aqui para o HttpClient funcionar em componentes standalone
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule]
 })
 export class LoginPage implements OnInit {
   
-  // Objeto com os mesmos nomes usados no seu HTML (email e password)
+  // Dados de Login
   user = { 
     email: '', 
     password: '' 
   };
+  
+  // Controle de Visibilidade da Senha
+  showPassword = false;
+  passwordToggleIcon = 'eye-outline';
+
+  // Controle do Modal de Recuperação
+  isModalOpen = false;
+  emailRecuperacao = '';
   
   returnUrl: string = '/home';
 
@@ -33,75 +40,81 @@ export class LoginPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Captura o destino caso o AuthGuard tenha redirecionado para cá
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
   }
 
+  /**
+   * ALTERNAR VISIBILIDADE DA SENHA
+   */
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+    this.passwordToggleIcon = this.showPassword ? 'eye-off-outline' : 'eye-outline';
+  }
+
+  /**
+   * EFETUAR LOGIN
+   */
   async login() {
-    // 1. Validação simples
     if (!this.user.email || !this.user.password) {
       this.mostrarToast('Por favor, preencha todos os campos.');
       return;
     }
 
-    // 2. Atalho para testes (Admin)
-    if (this.user.email === 'admin' && this.user.password === '123') {
+    // Atalho rápido para testes (opcional)
+    if (this.user.email === 'admin' && this.user.password === 'Admin@123') {
       sessionStorage.setItem('usuarioLogado', 'true');
       this.navCtrl.navigateRoot(this.returnUrl);
       return;
     }
 
-    // 3. Login oficial via API
     this.http.post(`${environment.apiUrl}/api/auth/login`, this.user).subscribe({
       next: (res: any) => {
         sessionStorage.setItem('usuarioLogado', 'true');
-        // Se a sua API retornar um token, guardamos aqui
         if (res.token) {
           sessionStorage.setItem('userToken', res.token);
         }
-        
         this.navCtrl.navigateRoot(this.returnUrl);
       },
       error: (err) => {
         console.error('Erro no login:', err);
-        this.mostrarToast('E-mail ou senha incorretos.');
+        const msg = err.error?.error || 'E-mail ou senha incorretos.';
+        this.mostrarToast(msg);
       }
     });
   }
 
-  async recuperarSenha() {
-    const alert = await this.alertCtrl.create({
-      header: 'Recuperar Senha',
-      subHeader: 'Enviaremos um código para o seu e-mail',
-      inputs: [
-        { 
-          name: 'email', 
-          type: 'email', 
-          placeholder: 'Digite o seu e-mail' 
-        }
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Enviar',
-          handler: (data) => {
-            if (!data.email) {
-              this.mostrarToast('Digite um e-mail válido.');
-              return false;
-            }
-            this.http.post(`${environment.apiUrl}/api/auth/recuperar`, { email: data.email }).subscribe({
-              next: () => this.mostrarToast('E-mail de recuperação enviado!'),
-              error: () => this.mostrarToast('E-mail não encontrado.')
-            });
-            return true;
-          }
-        }
-      ]
-    });
-    await alert.present();
+  /**
+   * CONTROLE DO MODAL DE RECUPERAÇÃO
+   */
+  setOpen(isOpen: boolean) {
+    this.isModalOpen = isOpen;
+    if (!isOpen) this.emailRecuperacao = ''; // Limpa o campo ao fechar
   }
 
-  // Navega para a tela de cadastro
+  /**
+   * ENVIAR E-MAIL DE RECUPERAÇÃO (CHAMA O BACK-END)
+   */
+  enviarEmail() {
+    if (!this.emailRecuperacao || !this.emailRecuperacao.includes('@')) {
+      this.mostrarToast('Por favor, insira um e-mail válido.');
+      return;
+    }
+
+    this.http.post(`${environment.apiUrl}/api/auth/recuperar`, { email: this.emailRecuperacao })
+      .subscribe({
+        next: (res: any) => {
+          this.mostrarToast(res.message || 'Instruções enviadas com sucesso!');
+          this.setOpen(false);
+        },
+        error: (err) => {
+          console.error('Erro na recuperação:', err);
+          const msg = err.error?.error || 'E-mail não encontrado ou erro no servidor.';
+          this.mostrarToast(msg);
+        }
+      });
+  }
+
+  // Navegação
   criarConta() {
     this.navCtrl.navigateForward('/signup');
   }
@@ -109,9 +122,10 @@ export class LoginPage implements OnInit {
   async mostrarToast(msg: string) {
     const toast = await this.toastCtrl.create({
       message: msg,
-      duration: 2500,
+      duration: 3000,
       position: 'bottom',
-      color: 'dark'
+      color: 'dark',
+      buttons: [{ text: 'OK', role: 'cancel' }]
     });
     await toast.present();
   }

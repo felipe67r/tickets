@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 // Adicionamos o ToastController para dar um feedback visual
 import { IonicModule, NavController, ToastController } from '@ionic/angular'; 
 import { UserService } from 'src/app/services/user.service';
@@ -10,7 +10,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule]
+  imports: [CommonModule, IonicModule,FormsModule, ReactiveFormsModule]
 })
 export class SignupPage implements OnInit {
   signupForm!: FormGroup; 
@@ -23,12 +23,16 @@ export class SignupPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.signupForm = this.fb.group({
-      nome: ['', [Validators.required]], 
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(6)]]
-    });
-  }
+  this.signupForm = this.fb.group({
+    nome: ['', [Validators.required]], 
+    email: ['', [Validators.required, Validators.email]],
+    // Atualizado com a nova Regex da política de senha
+    senha: ['', [
+      Validators.required, 
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/)
+    ]]
+  });
+}
 
   async onSubmit() {
     if (this.signupForm.valid) {

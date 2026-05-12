@@ -6,27 +6,34 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Campo Nome -->
     <ion-item>
       <ion-label position="floating">Nome Completo</ion-label>
       <ion-input formControlName="nome" type="text"></ion-input>
     </ion-item>
 
+    <!-- Campo E-mail -->
     <ion-item>
       <ion-label position="floating">E-mail</ion-label>
       <ion-input formControlName="email" type="email"></ion-input>
     </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">Senha</ion-label>
-      <ion-input formControlName="senha" type="password"></ion-input>
+    <!-- Campo Senha (CORRIGIDO: Removido ngModel e adicionado formControlName) -->
+    <ion-item lines="outline">
+      <ion-label position="stacked">Senha</ion-label>
+      <ion-input type="password" formControlName="senha" placeholder="********"></ion-input>
     </ion-item>
-    
+
+    <!-- Nota de Validação -->
     <ion-note color="danger" class="ion-margin-top" *ngIf="signupForm.get('senha')?.invalid && signupForm.get('senha')?.touched">
       A senha deve ter 8+ caracteres, incluir Maiúscula, Minúscula, Número e Símbolo.
     </ion-note>
 
+    <!-- Botão Cadastrar -->
     <ion-button expand="block" type="submit" [disabled]="signupForm.invalid" class="ion-margin-top">
       Cadastrar
     </ion-button>
+    
   </form>
 </ion-content>

@@ -51,7 +51,7 @@ export class RelatoriosPage implements OnInit {
           handler: () => { this.executarBackup(); } 
         },
         {
-          text: 'Configurar Automação (Frequência)',
+          text: 'Agendar Backup Automatico',
           icon: 'time-outline',
           handler: () => { this.solicitarFrequencia(); }
         },
