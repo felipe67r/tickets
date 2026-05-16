@@ -6,8 +6,6 @@ import { backupManual } from '../controllers/backup.controller.js';
 export const iniciarAgendamento = () => {
   const configPath = path.join(process.cwd(), 'config', 'agendamento.json');
 
-  // --- REGRA 1: BACKUP FIXO (Debaixo dos panos) ---
-  // Executa todos os dias exatamente às 02:00 da manhã
   cron.schedule('0 2 * * *', () => {
     console.log('⏰ [SISTEMA] Iniciando backup automático de rotina (02:00)...');
     backupManual();
@@ -15,9 +13,6 @@ export const iniciarAgendamento = () => {
     timezone: "America/Sao_Paulo" // Garante o horário brasileiro
   });
 
-
-  // --- REGRA 2: BACKUP DINÂMICO (Configurado pelo App) ---
-  // Checa a cada minuto se coincide com a escolha do usuário
   cron.schedule('* * * * *', () => {
     if (fs.existsSync(configPath)) {
       try {
@@ -28,7 +23,6 @@ export const iniciarAgendamento = () => {
         const minutoBate = agora.getMinutes() === parseInt(config.minuto);
 
         if (horaBate && minutoBate) {
-          // Verifica a frequência salva
           if (config.frequencia === 'diario') {
             console.log('⏰ [APP] Backup diário agendado pelo usuário iniciado...');
             backupManual();

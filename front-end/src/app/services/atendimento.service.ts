@@ -13,17 +13,29 @@ export class AtendimentoService {
   constructor(private http: HttpClient) {}
 
   chamarSenha(guiche: any): Observable<any> {
-    const guicheStr = String(guiche).trim();
+    let guicheStr = '';
 
-    if (!guicheStr) {
+    // Verifica se o que foi passado é um objeto (ex: { guiche: '1' }) ou uma string/número direto
+    if (guiche && typeof guiche === 'object' && guiche.guiche) {
+      guicheStr = String(guiche.guiche).trim();
+    } else {
+      guicheStr = String(guiche).trim();
+    }
+
+    // Validação de segurança se o guichê vier em branco ou der erro de conversão
+    if (!guicheStr || guicheStr === '[object Object]') {
       console.error('Guichê não informado ou inválido.');
       return throwError(() => new Error('Guichê é obrigatório e deve ser válido.'));
     }
 
+    // Agora o JSON vai envelopado perfeitamente para o backend
     return this.http.post(`${this.apiUrl}/chamar`, { guiche: guicheStr }).pipe(
       catchError((error) => {
-        console.error('Erro ao chamar senha:', error);
-        return throwError(() => new Error('Erro ao chamar senha.'));
+        console.error('Erro detalhado retornado pelo servidor:', error);
+        
+        // Melhora a mensagem de erro capturando o que o backend respondeu de fato
+        const msgErro = error.error?.message || 'Erro ao chamar senha.';
+        return throwError(() => new Error(msgErro));
       })
     );
   }

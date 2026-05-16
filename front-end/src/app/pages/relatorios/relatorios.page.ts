@@ -5,6 +5,10 @@ import { IonicModule, ActionSheetController, AlertController, LoadingController,
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
+// Importações para geração do PDF no Frontend
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 @Component({
   selector: 'app-relatorios',
   templateUrl: './relatorios.page.html',
@@ -26,17 +30,17 @@ export class RelatoriosPage implements OnInit {
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private navCtrl: NavController // Adicionado para navegação
+    private navCtrl: NavController 
   ) {}
 
   ngOnInit() {}
 
   async presentActionSheet() {
     const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Opções do Sistema', // Título mais abrangente
+      header: 'Sobre o Sistema', 
       buttons: [
         {
-          text: 'Gerenciar Perfil', // NOVA OPÇÃO
+          text: 'Gerenciar Perfil', 
           icon: 'person-circle-outline',
           handler: () => { this.navCtrl.navigateForward('/profile'); }
         },
@@ -56,7 +60,7 @@ export class RelatoriosPage implements OnInit {
           handler: () => { this.solicitarFrequencia(); }
         },
         {
-          text: 'Sair do Sistema', // NOVA OPÇÃO
+          text: 'Sair do Sistema', 
           role: 'destructive',
           icon: 'log-out-outline',
           handler: () => { this.logout(); }
@@ -72,14 +76,12 @@ export class RelatoriosPage implements OnInit {
   }
 
   // --- LÓGICA DE NAVEGAÇÃO E SAÍDA ---
-
   logout() {
-    sessionStorage.clear(); // Limpa tokens e dados de sessão
-    this.navCtrl.navigateRoot('/login'); // Redireciona para o login
+    sessionStorage.clear(); 
+    this.navCtrl.navigateRoot('/login'); 
   }
 
   // --- NOVO FLUXO DE AGENDAMENTO ---
-
   async solicitarFrequencia() {
     const alert = await this.alertCtrl.create({
       header: 'Frequência do Backup',
@@ -135,7 +137,6 @@ export class RelatoriosPage implements OnInit {
   }
 
   // --- LÓGICA DE BACKUP MANUAL E DOWNLOAD ---
-
   async carregarListaBackups() {
     this.tipoRelatorio = 'backups';
     const loading = await this.loadingCtrl.create({ message: 'Buscando lista...' });
@@ -180,19 +181,129 @@ export class RelatoriosPage implements OnInit {
     link.remove();
   }
 
-  // --- LÓGICA DE RELATÓRIOS ---
-
-  carregarRelatorio(tipo: 'diario' | 'mensal') {
+ async carregarRelatorio(tipo: 'diario' | 'mensal') {
     this.tipoRelatorio = tipo; 
-    this.http.get<any[]>(`${environment.apiUrl}/api/relatorio/${tipo}`).subscribe({
-      next: (res) => {
-        this.relatorio = res.map(item => ({
-          total_emitidas: item.total_emitidas || 0,
-          total_atendidas: item.total_atendidas || 0,
+    this.loading = true;
+
+    this.http.get<any>(`${environment.apiUrl}/api/relatorio/${tipo}`).subscribe({
+      next: (res: any) => {
+        console.log('RESPOSTA DO BACKEND:', res);
+
+        const dadosBrutos = Array.isArray(res) ? res : (res?.dados || res?.relatorio || []);
+
+        // 1. Criamos um mapeamento padrão zerado para garantir que todos os tipos apareçam
+        const categorias = {
+          'Geral': { total_emitidas: 0, total_atendidas: 0 },
+          'Preferencial': { total_emitidas: 0, total_atendidas: 0 },
+          'Exame': { total_emitidas: 0, total_atendidas: 0 }
+        };
+
+        // 2. Percorremos os dados do banco e jogamos cada um na sua categoria correspondente
+        dadosBrutos.forEach((item: any) => {
+          const tipoBanco = (item.nome_tipo || item.setor || item.tipo || '').toUpperCase();
+          
+          // Captura os valores vindos da API precavendo qualquer nome de coluna
+          const emitidas = Number(item.total_emitidas ?? item.emitidas ?? item.quantidade ?? 0);
+          const atendidas = Number(item.total_atendidas ?? item.atendidas ?? item.qtd_atendidas ?? 0);
+
+          // Verifica a sigla ou nome vindo do banco e soma no grupo certo
+          if (tipoBanco === 'SG' || tipoBanco === 'GERAL') {
+            categorias['Geral'].total_emitidas += emitidas;
+            categorias['Geral'].total_atendidas += atendidas;
+          } else if (tipoBanco === 'SP' || tipoBanco === 'PREFERENCIAL') {
+            categorias['Preferencial'].total_emitidas += emitidas;
+            categorias['Preferencial'].total_atendidas += atendidas;
+          } else if (tipoBanco === 'SE' || tipoBanco === 'EXAME') {
+            categorias['Exame'].total_emitidas += emitidas;
+            categorias['Exame'].total_atendidas += atendidas;
+          } else {
+            // Se o banco trouxer tudo somado em uma linha só sem tipo, dividimos provisoriamente aqui para teste
+            // Ou tratamos como 'Geral'
+            categorias['Geral'].total_emitidas += emitidas;
+            categorias['Geral'].total_atendidas += atendidas;
+          }
+        });
+
+        // 3. Transformamos o objeto de categorias de volta em um Array para o *ngFor do HTML ler
+        this.relatorio = Object.keys(categorias).map(key => ({
+          nome_tipo: key,
+          total_emitidas: categorias[key as keyof typeof categorias].total_emitidas,
+          total_atendidas: categorias[key as keyof typeof categorias].total_atendidas
         }));
+
+        console.log('DADOS SEPARADOS POR TIPO PARA A TELA:', this.relatorio);
+        this.loading = false;
       },
-      error: () => this.mostrarToast('Erro no relatório.')
+      error: (err) => {
+        this.loading = false;
+        console.error('Erro no relatório:', err);
+        this.mostrarToast('Erro ao carregar dados.');
+      }
     });
+  }
+
+  calcularTotalEmitidas(): number {
+    return this.relatorio.reduce((soma, item) => soma + (item.total_emitidas || 0), 0);
+  }
+
+  calcularTotalAtendidas(): number {
+    return this.relatorio.reduce((soma, item) => soma + (item.total_atendidas || 0), 0);
+  }
+
+  // Exportação profissional de PDF direto do array de dados
+  exportarPDF() {
+    try {
+      const doc = new jsPDF();
+      const titulo = `Sistema de Atendimento: Relatório de Senhas - ${this.tipoRelatorio === 'diario' ? 'Diário' : 'Mensal'}`;
+      const dataImpressao = new Date().toLocaleString('pt-BR');
+
+      // Cabeçalho estilizado do PDF
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.text(titulo.toUpperCase(), 14, 22);
+
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(`Emitido em: ${dataImpressao}`, 14, 30);
+      doc.line(14, 35, 196, 35); // Linha horizontal decorativa
+
+      // Mapeando dados do array para o formato aceito pela tabela do jsPDF
+      const linhasTabela = this.relatorio.map(item => [
+        item.nome_tipo,
+        item.total_emitidas.toString(),
+        item.total_atendidas.toString()
+      ]);
+
+      // Inserindo a linha final de Totais
+      linhasTabela.push([
+        'TOTAL',
+        this.calcularTotalEmitidas().toString(),
+        this.calcularTotalAtendidas().toString()
+      ]);
+
+      // Renderizando a tabela no arquivo
+      autoTable(doc, {
+        startY: 40,
+        head: [['Tipo de Senha', 'Emitidas', 'Atendidas']],
+        body: linhasTabela,
+        theme: 'striped',
+        headStyles: { fillColor: [56, 128, 255] },
+        didParseCell: (data) => {
+          // Destaca visualmente a última linha (a de Totais)
+          if (data.row.index === linhasTabela.length - 1) {
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fillColor = [240, 240, 240];
+          }
+        }
+      });
+
+      // Baixa o arquivo gerado
+      doc.save(`relatorio_${this.tipoRelatorio}_${new Date().getTime()}.pdf`);
+      this.mostrarToast('PDF baixado com sucesso!');
+    } catch (error) {
+      console.error(error);
+      this.mostrarToast('Erro ao gerar arquivo PDF.');
+    }
   }
 
   fecharRelatorio() {

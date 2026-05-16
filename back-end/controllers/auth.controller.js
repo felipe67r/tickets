@@ -2,37 +2,29 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import db from '../config/db.js';
-import crypto from 'crypto'; // Nativo do Node para gerar a senha aleatória
+import crypto from 'crypto';
 
 const SECRET_KEY = 'sua_chave_secreta_aqui';
 
-// Função para validar a complexidade da senha
 const validarPoliticaSenha = (senha) => {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
   return regex.test(senha);
 };
 
-/**
- * --- GERADOR DE SENHA ALEATÓRIA ---
- * Gera uma senha forte que atende à Regex de validação
- */
 const gerarSenhaAleatoria = () => {
   const caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
   let senha = '';
-  // Garante pelo menos um de cada tipo para passar na validação
   senha += 'ABC'[Math.floor(Math.random() * 3)];
   senha += 'abc'[Math.floor(Math.random() * 3)];
   senha += '123'[Math.floor(Math.random() * 3)];
   senha += '!@#'[Math.floor(Math.random() * 3)];
   
-  // Completa até 10 caracteres
   for (let i = 0; i < 6; i++) {
     senha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
   }
   return senha;
 };
 
-// --- LOGIN ---
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -50,7 +42,6 @@ export const login = async (req, res) => {
   }
 };
 
-// --- REGISTRO ---
 export const register = async (req, res) => {
   const { nome, email, senha } = req.body;
   if (!nome || !email || !senha) return res.status(400).json({ error: 'Campos obrigatórios.' });
@@ -69,7 +60,6 @@ export const register = async (req, res) => {
   }
 };
 
-// --- RECUPERAÇÃO DE SENHA (ATUALIZADO) ---
 export const recuperarSenha = async (req, res) => {
   const { email } = req.body;
 
@@ -79,17 +69,13 @@ export const recuperarSenha = async (req, res) => {
     const [rows] = await db.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
     if (rows.length === 0) return res.status(404).json({ error: 'E-mail não cadastrado.' });
 
-    // 1. Gera a senha aleatória
     const novaSenhaTemporaria = gerarSenhaAleatoria();
 
-    // 2. Criptografa a nova senha para o banco
     const salt = await bcrypt.genSalt(10);
     const hashedSenha = await bcrypt.hash(novaSenhaTemporaria, salt);
 
-    // 3. Atualiza no Banco de Dados
     await db.execute('UPDATE usuarios SET senha = ? WHERE email = ?', [hashedSenha, email]);
 
-    // 4. Configuração do Transporte
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -98,7 +84,6 @@ export const recuperarSenha = async (req, res) => {
       }
     });
 
-    // 5. Corpo do E-mail (HTML Limpo para não cair no Spam)
     const mailOptions = {
       from: '"Tickets System" <jonatas2044@gmail.com>',
       to: email,

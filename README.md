@@ -87,3 +87,4 @@ O aplicativo estará disponível em `http://localhost:8100`.
 - Adrielly Maria Quirino
 - Gilton Francisco de Souza Santos
 - Luis Felipe Silva Ribeiro
+- Jônatas Gonçalves da Silva

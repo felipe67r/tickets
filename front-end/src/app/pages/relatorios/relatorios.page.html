@@ -31,6 +31,7 @@
     <p>Processando requisição...</p>
   </div>
 
+  <!-- BLOCO DE RELATÓRIO DE SENHAS -->
   <div *ngIf="!loading && relatorio.length > 0 && tipoRelatorio !== 'backups'" class="relatorio-bloco">
     <div class="header-bloco">
       <h2 class="relatorio-titulo">Relatório {{ tipoRelatorio === 'diario' ? 'Diário' : 'Mensal' }}</h2>
@@ -39,21 +40,36 @@
       </button>
     </div>
 
+    <!-- Botão para exportar o relatório atual em PDF -->
+    <ion-button expand="block" fill="outline" color="danger" (click)="exportarPDF()" class="ion-margin-bottom">
+      <ion-icon name="document-attach-outline" slot="start"></ion-icon>
+      Exportar Relatório em PDF
+    </ion-button>
+
     <div class="relatorio-tabela">
       <div class="relatorio-linha header-tabela">
-        <div class="relatorio-celula">Setor</div>
+        <div class="relatorio-celula">Tipo de Senha</div>
         <div class="relatorio-celula">Emitidas</div>
         <div class="relatorio-celula">Atendidas</div>
       </div>
       
+      <!-- Linhas Dinâmicas: Vai renderizar Geral, Preferencial e Exame vindo do Array -->
       <div class="relatorio-linha" *ngFor="let item of relatorio">
-        <div class="relatorio-celula"><strong>Geral</strong></div>
+        <div class="relatorio-celula"><strong>{{ item.nome_tipo }}</strong></div>
         <div class="relatorio-celula">{{ item.total_emitidas }}</div>
         <div class="relatorio-celula">{{ item.total_atendidas }}</div>
+      </div>
+
+      <!-- INSERIDO: Linha de Totais calculada dinamicamente no final da tabela -->
+      <div class="relatorio-linha footer-tabela" style="background-color: #f4f5f8; font-weight: bold; border-top: 2px solid #bbb; color: #000;">
+        <div class="relatorio-celula">TOTAL GERAL</div>
+        <div class="relatorio-celula">{{ calcularTotalEmitidas() }}</div>
+        <div class="relatorio-celula">{{ calcularTotalAtendidas() }}</div>
       </div>
     </div>
   </div>
 
+  <!-- BLOCO DE BACKUPS -->
   <div *ngIf="!loading && tipoRelatorio === 'backups' && listaBackups.length > 0" class="relatorio-bloco">
     <div class="header-bloco">
       <h2 class="relatorio-titulo">Backups no Servidor</h2>

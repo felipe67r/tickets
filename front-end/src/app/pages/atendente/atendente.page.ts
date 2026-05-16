@@ -40,20 +40,23 @@ export class AtendentePage implements OnInit {
       return;
     }
 
-    this.atendimentoService.chamarSenha(this.guiche).subscribe({
+    // Criamos um objeto estruturado para enviar no Body do POST
+    const dadosRequisicao = { guiche: this.guiche };
+
+    this.atendimentoService.chamarSenha(dadosRequisicao).subscribe({
       next: (res) => {
+        // O unshift adiciona a nova senha no topo da lista exibida
         this.senhasChamadas.unshift({ ...res, tempoRestante: '00:00' }); 
         this.erroMensagem = null;
         this.senhaService.notificarAtualizacao();
         this.iniciarAtendimentoTimer(res.senha);
       },
       error: (err) => {
-        this.erroMensagem = err.message || 'Erro ao chamar senha.';
+        this.erroMensagem = err.error?.message || err.message || 'Erro ao chamar senha.';
         console.error('Erro ao chamar senha:', err);
       }
     });
   }
-
   iniciarAtendimentoTimer(senha: string) {
     if (this.atendimentoTimers[senha]) {
       clearInterval(this.atendimentoTimers[senha]);
