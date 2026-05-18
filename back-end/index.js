@@ -1,3 +1,5 @@
+import https from 'https';
+import fs from 'fs';
 import express from 'express';
 import cors from 'cors';
 import atendimentoRoutes from './routes/atendimento.routes.js';
@@ -47,10 +49,16 @@ app.post('/api/user/register', register);
 
 // Configuração da Porta
 const PORT = 3000;
-app.listen(PORT, '0.0.0.0', () => { 
-  console.log('-------------------------------------------');
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-  console.log(`✅ Rotas de Backup: ATIVAS (/api/backups)`);
-  console.log(`⏰ Agendamento Automático: CONFIGURADO`);
-  console.log('-------------------------------------------');
+
+// Carrega os certificados SSL gerados
+const sslOptions = {
+  key: fs.readFileSync('/tickets-main/certs/server.key'),
+  cert: fs.readFileSync('/tickets-main/certs/server.crt')
+};
+
+// Cria o servidor HTTPS usando a sintaxe nativa de ES Modules
+https.createServer(sslOptions, app).listen(PORT, '0.0.0.0', () => {
+  console.log('--------------------------------------------------');
+  console.log(`🔒 Servidor SEGURO rodando via HTTPS na porta ${PORT}`);
+  console.log('--------------------------------------------------');
 });

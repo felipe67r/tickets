@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000'
+  apiUrl: ''
   //Alterar para o endereço ip para que funcione externamente.
 };
 

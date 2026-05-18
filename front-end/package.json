@@ -9,7 +9,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "dev:ssl": "ionic serve --external --address 0.0.0.0 --ssl --ssl-key=/tickets-main/certs/server.key --ssl-cert=/tickets-main/certs/server.crt -- --proxy-config=proxy.conf.json"
   },
   "private": true,
   "dependencies": {
