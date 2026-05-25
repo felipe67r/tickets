@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { logSenhaEmitida } from '../logger.js';
 
 export async function emitirSenha(req, res) {
   try {
@@ -31,12 +32,15 @@ export async function emitirSenha(req, res) {
       [codigo_senha, tipo]
     );
 
+    logSenhaEmitida(tipo, codigo_senha);
 
     return res.status(201).json({
       senha: codigo_senha,
       tipo: tipo
     });
 
+    return res.status(201).json({ senha: codigo_senha, tipo });
+    
   } catch (error) {
     console.error("🔥 Erro no Controller de Senha:", error);
     return res.status(500).json({ erro: 'Erro interno ao gerar senha no banco.' });

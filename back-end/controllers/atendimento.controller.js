@@ -1,4 +1,5 @@
 import db from '../config/db.js';
+import { logSenhaChamada, logAtendimentoEncerrado } from '../logger.js';
 
 const estadoGuiches = new Map();
 let ultimoTipoChamado = null;
@@ -98,6 +99,8 @@ export async function chamarProximaSenha(req, res) {
     const novoTempoLiberacao = new Date(agora.getTime() + tempoMedio * 60000);
     estadoGuiches.set(guiche, novoTempoLiberacao);
 
+    logSenhaChamada(`Guichê ${guiche}`, senha.codigo_senha, guiche);
+
     res.status(200).json({
       senha: senha.codigo_senha,
       tipo: senha.tipo_codigo,
@@ -117,7 +120,7 @@ export async function encerrarAtendimento(req, res) {
       SET foi_atendida = 2 
       WHERE foi_atendida = 0 AND data_emissao = CURDATE()
     `);
-
+    logAtendimentoEncerrado('Administrador');
     res.status(200).json({ mensagem: 'Expediente encerrado e painel limpo com sucesso.' });
   } catch (error) {
     console.error('Erro ao encerrar atendimento:', error);

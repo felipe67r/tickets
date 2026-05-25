@@ -2,6 +2,7 @@ import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { logBackupRealizado } from '../logger.js';
 
 // Configuração do Banco de Dados
 const dbConfig = {
@@ -88,6 +89,7 @@ export const backupManual = (req, res) => {
     setTimeout(() => {
       if (fs.existsSync(backupPath)) {
         console.log(`✅ Backup concluído com sucesso: ${fileName}`);
+        logBackupRealizado('Sistema', fileName);
         if (res) res.status(200).json({ message: 'Backup realizado!', arquivo: fileName });
       } else {
         console.error('❌ Erro: O comando rodou mas o ficheiro não foi encontrado em:', backupPath);
