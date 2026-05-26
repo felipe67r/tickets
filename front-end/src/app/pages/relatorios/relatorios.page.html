@@ -31,7 +31,6 @@
     <p>Processando requisição...</p>
   </div>
 
-  <!-- BLOCO DE RELATÓRIO DE SENHAS -->
   <div *ngIf="!loading && relatorio.length > 0 && tipoRelatorio !== 'backups'" class="relatorio-bloco">
     <div class="header-bloco">
       <h2 class="relatorio-titulo">Relatório {{ tipoRelatorio === 'diario' ? 'Diário' : 'Mensal' }}</h2>
@@ -40,7 +39,6 @@
       </button>
     </div>
 
-    <!-- Botão para exportar o relatório atual em PDF -->
     <ion-button expand="block" fill="outline" color="danger" (click)="exportarPDF()" class="ion-margin-bottom">
       <ion-icon name="document-attach-outline" slot="start"></ion-icon>
       Exportar Relatório em PDF
@@ -53,14 +51,12 @@
         <div class="relatorio-celula">Atendidas</div>
       </div>
       
-      <!-- Linhas Dinâmicas: Vai renderizar Geral, Preferencial e Exame vindo do Array -->
       <div class="relatorio-linha" *ngFor="let item of relatorio">
         <div class="relatorio-celula"><strong>{{ item.nome_tipo }}</strong></div>
         <div class="relatorio-celula">{{ item.total_emitidas }}</div>
         <div class="relatorio-celula">{{ item.total_atendidas }}</div>
       </div>
 
-      <!-- INSERIDO: Linha de Totais calculada dinamicamente no final da tabela -->
       <div class="relatorio-linha footer-tabela" style="background-color: #f4f5f8; font-weight: bold; border-top: 2px solid #bbb; color: #000;">
         <div class="relatorio-celula">TOTAL GERAL</div>
         <div class="relatorio-celula">{{ calcularTotalEmitidas() }}</div>
@@ -69,7 +65,6 @@
     </div>
   </div>
 
-  <!-- BLOCO DE BACKUPS -->
   <div *ngIf="!loading && tipoRelatorio === 'backups' && listaBackups.length > 0" class="relatorio-bloco">
     <div class="header-bloco">
       <h2 class="relatorio-titulo">Backups no Servidor</h2>
@@ -91,8 +86,8 @@
         </div>
         <div class="relatorio-celula">{{ backup.tamanho }}</div>
         <div class="relatorio-celula">
-          <ion-button size="small" fill="clear" (click)="baixarArquivo(backup.nome)" title="Baixar SQL">
-            <ion-icon name="cloud-download-outline" color="primary"></ion-icon>
+          <ion-button size="small" fill="clear" (click)="confirmarRestore(backup.nome)" title="Restaurar este backup">
+            <ion-icon name="refresh-circle-outline" color="danger"></ion-icon>
           </ion-button>
         </div>
       </div>

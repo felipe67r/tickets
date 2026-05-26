@@ -1,18 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  // AJUSTADO: Removido o 's' de users para bater com o seu backend
   private readonly API = `${environment.apiUrl}/api/user`;
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Helper para montar os headers com o Token
-   */
   private getOptions() {
     const token = sessionStorage.getItem('userToken');
     return {
@@ -23,18 +19,23 @@ export class UserService {
     };
   }
 
-  // MÉTODO PARA CADASTRO (Signup)
-  // Agora vai bater com app.post('/api/user/register', register) do seu index.js
   create(userData: any): Observable<any> {
     return this.http.post(`${this.API}/register`, userData);
   }
 
-  // Outros métodos usando a mesma base
   updateUser(userData: any): Observable<any> {
     return this.http.put(`${this.API}/update`, userData, this.getOptions());
   }
 
   deleteUser(): Observable<any> {
-    return this.http.delete(`${this.API}/delete`, this.getOptions());
+  const dados = sessionStorage.getItem('usuario');
+  const usuarioLogado = dados ? JSON.parse(dados) : null;
+  const emailUsuario = usuarioLogado?.email; 
+
+  if (!emailUsuario) {
+    return throwError(() => new Error('E-mail não encontrado na sessão.'));
   }
+
+  return this.http.post(`${environment.apiUrl}/api/usuarios/deletar`, { email: emailUsuario }, this.getOptions());
 }
+};

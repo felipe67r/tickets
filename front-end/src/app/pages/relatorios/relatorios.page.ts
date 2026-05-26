@@ -5,7 +5,6 @@ import { IonicModule, ActionSheetController, AlertController, LoadingController,
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
-// Importações para geração do PDF no Frontend
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -20,8 +19,8 @@ import autoTable from 'jspdf-autotable';
 })
 export class RelatoriosPage implements OnInit {
   relatorio: any[] = [];
-  listaBackups: any[] = []; 
-  tipoRelatorio: 'diario' | 'mensal' | 'backups' = 'diario';
+  listaBackups: any[] = []; // Reintroduzido para armazenar os arquivos disponíveis
+  tipoRelatorio: 'diario' | 'mensal' | 'backups' = 'diario'; // Adicionado o estado 'backups'
   loading: boolean = false;
 
   constructor(
@@ -45,17 +44,17 @@ export class RelatoriosPage implements OnInit {
           handler: () => { this.navCtrl.navigateForward('/profile'); }
         },
         {
-          text: 'Restaurar e baixar backups',
-          icon: 'list-outline',
-          handler: () => { this.carregarListaBackups(); }
-        },
-        {
           text: 'Gerar Backup Manual Agora',
           icon: 'cloud-download-outline',
           handler: () => { this.executarBackup(); } 
         },
         {
-          text: 'Agendar Backup Automatico',
+          text: 'Efetuar restore',
+          icon: 'list-outline',
+          handler: () => { this.carregarListaBackups(); }
+        },
+        {
+          text: 'Agendar Backup Automático',
           icon: 'time-outline',
           handler: () => { this.solicitarFrequencia(); }
         },
@@ -75,13 +74,63 @@ export class RelatoriosPage implements OnInit {
     await actionSheet.present();
   }
 
-  // --- LÓGICA DE NAVEGAÇÃO E SAÍDA ---
   logout() {
     sessionStorage.clear(); 
     this.navCtrl.navigateRoot('/login'); 
   }
 
-  // --- NOVO FLUXO DE AGENDAMENTO ---
+  async carregarListaBackups() {
+    this.tipoRelatorio = 'backups';
+    const loading = await this.loadingCtrl.create({ message: 'Buscando backups disponíveis...' });
+    await loading.present();
+
+    this.http.get<any[]>(`${environment.apiUrl}/api/backups/lista`).subscribe({
+      next: (res) => {
+        this.listaBackups = res;
+        loading.dismiss();
+      },
+      error: (err) => {
+        loading.dismiss();
+        console.error(err);
+        this.mostrarToast('Erro ao carregar lista de backups.');
+      }
+    });
+  }
+
+  async confirmarRestore(nomeArquivo: string) {
+    const alert = await this.alertCtrl.create({
+      header: '⚠️ Confirmar Restore',
+      message: `Você tem certeza que deseja restaurar o arquivo "${nomeArquivo}"? Os dados atuais serão apagados e substituídos por este backup.`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Sim, Restaurar Banco',
+          handler: () => { this.executarRestore(nomeArquivo); }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async executarRestore(nomeArquivo: string) {
+    const loading = await this.loadingCtrl.create({ message: 'Processando restauração do banco...' });
+    await loading.present();
+
+    this.http.post(`${environment.apiUrl}/api/backups/restore`, { arquivo: nomeArquivo }).subscribe({
+      next: (res: any) => {
+        loading.dismiss();
+        this.mostrarToast(res.message || 'Banco de dados restaurado com sucesso!');
+        this.fecharRelatorio(); 
+      },
+      error: (err) => {
+        loading.dismiss();
+        console.error('Erro no restore:', err);
+        const msg = err.error?.error || 'Erro ao aplicar o backup selecionado.';
+        this.mostrarToast(msg);
+      }
+    });
+  }
+
   async solicitarFrequencia() {
     const alert = await this.alertCtrl.create({
       header: 'Frequência do Backup',
@@ -136,24 +185,6 @@ export class RelatoriosPage implements OnInit {
     });
   }
 
-  // --- LÓGICA DE BACKUP MANUAL E DOWNLOAD ---
-  async carregarListaBackups() {
-    this.tipoRelatorio = 'backups';
-    const loading = await this.loadingCtrl.create({ message: 'Buscando lista...' });
-    await loading.present();
-
-    this.http.get<any[]>(`${environment.apiUrl}/api/backups/lista`).subscribe({
-      next: (res) => {
-        this.listaBackups = res;
-        loading.dismiss();
-      },
-      error: (err) => {
-        loading.dismiss();
-        this.mostrarToast('Erro ao carregar lista.');
-      }
-    });
-  }
-
   async executarBackup() {
     const loading = await this.loadingCtrl.create({ message: 'Gerando Backup...' });
     await loading.present();
@@ -161,7 +192,7 @@ export class RelatoriosPage implements OnInit {
     this.http.post(`${environment.apiUrl}/api/backups/manual`, {}).subscribe({
       next: () => {
         loading.dismiss();
-        this.mostrarToast('Backup gerado!');
+        this.mostrarToast('Backup gerado com sucesso!');
         if (this.tipoRelatorio === 'backups') this.carregarListaBackups();
       },
       error: () => {
@@ -171,67 +202,47 @@ export class RelatoriosPage implements OnInit {
     });
   }
 
-  baixarArquivo(nomeArquivo: string) {
-    const url = `${environment.apiUrl}/api/backups/download/${nomeArquivo}`;
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', nomeArquivo);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  }
-
- async carregarRelatorio(tipo: 'diario' | 'mensal') {
+  async carregarRelatorio(tipo: 'diario' | 'mensal') {
     this.tipoRelatorio = tipo; 
     this.loading = true;
 
     this.http.get<any>(`${environment.apiUrl}/api/relatorio/${tipo}`).subscribe({
       next: (res: any) => {
-        console.log('RESPOSTA DO BACKEND:', res);
-
         const dadosBrutos = Array.isArray(res) ? res : (res?.dados || res?.relatorio || []);
 
-        // 1. Criamos um mapeamento padrão zerado para garantir que todos os tipos apareçam
-        const categorias = {
+        const categories = {
           'Geral': { total_emitidas: 0, total_atendidas: 0 },
           'Preferencial': { total_emitidas: 0, total_atendidas: 0 },
           'Exame': { total_emitidas: 0, total_atendidas: 0 }
         };
 
-        // 2. Percorremos os dados do banco e jogamos cada um na sua categoria correspondente
         dadosBrutos.forEach((item: any) => {
           const tipoBanco = (item.nome_tipo || item.setor || item.tipo || '').toUpperCase();
           
-          // Captura os valores vindos da API precavendo qualquer nome de coluna
           const emitidas = Number(item.total_emitidas ?? item.emitidas ?? item.quantidade ?? 0);
           const atendidas = Number(item.total_atendidas ?? item.atendidas ?? item.qtd_atendidas ?? 0);
 
-          // Verifica a sigla ou nome vindo do banco e soma no grupo certo
           if (tipoBanco === 'SG' || tipoBanco === 'GERAL') {
-            categorias['Geral'].total_emitidas += emitidas;
-            categorias['Geral'].total_atendidas += atendidas;
+            categories['Geral'].total_emitidas += emitidas;
+            categories['Geral'].total_atendidas += atendidas;
           } else if (tipoBanco === 'SP' || tipoBanco === 'PREFERENCIAL') {
-            categorias['Preferencial'].total_emitidas += emitidas;
-            categorias['Preferencial'].total_atendidas += atendidas;
+            categories['Preferencial'].total_emitidas += emitidas;
+            categories['Preferencial'].total_atendidas += atendidas;
           } else if (tipoBanco === 'SE' || tipoBanco === 'EXAME') {
-            categorias['Exame'].total_emitidas += emitidas;
-            categorias['Exame'].total_atendidas += atendidas;
+            categories['Exame'].total_emitidas += emitidas;
+            categories['Exame'].total_atendidas += atendidas;
           } else {
-            // Se o banco trouxer tudo somado em uma linha só sem tipo, dividimos provisoriamente aqui para teste
-            // Ou tratamos como 'Geral'
-            categorias['Geral'].total_emitidas += emitidas;
-            categorias['Geral'].total_atendidas += atendidas;
+            categories['Geral'].total_emitidas += emitidas;
+            categories['Geral'].total_atendidas += atendidas;
           }
         });
 
-        // 3. Transformamos o objeto de categorias de volta em um Array para o *ngFor do HTML ler
-        this.relatorio = Object.keys(categorias).map(key => ({
+        this.relatorio = Object.keys(categories).map(key => ({
           nome_tipo: key,
-          total_emitidas: categorias[key as keyof typeof categorias].total_emitidas,
-          total_atendidas: categorias[key as keyof typeof categorias].total_atendidas
+          total_emitidas: categories[key as keyof typeof categories].total_emitidas,
+          total_atendidas: categories[key as keyof typeof categories].total_atendidas
         }));
 
-        console.log('DADOS SEPARADOS POR TIPO PARA A TELA:', this.relatorio);
         this.loading = false;
       },
       error: (err) => {
@@ -250,14 +261,12 @@ export class RelatoriosPage implements OnInit {
     return this.relatorio.reduce((soma, item) => soma + (item.total_atendidas || 0), 0);
   }
 
-  // Exportação profissional de PDF direto do array de dados
   exportarPDF() {
     try {
       const doc = new jsPDF();
       const titulo = `Sistema de Atendimento: Relatório de Senhas - ${this.tipoRelatorio === 'diario' ? 'Diário' : 'Mensal'}`;
       const dataImpressao = new Date().toLocaleString('pt-BR');
 
-      // Cabeçalho estilizado do PDF
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(15);
       doc.text(titulo.toUpperCase(), 14, 22);
@@ -265,23 +274,20 @@ export class RelatoriosPage implements OnInit {
       doc.setFont('Helvetica', 'normal');
       doc.setFontSize(10);
       doc.text(`Emitido em: ${dataImpressao}`, 14, 30);
-      doc.line(14, 35, 196, 35); // Linha horizontal decorativa
+      doc.line(14, 35, 196, 35);
 
-      // Mapeando dados do array para o formato aceito pela tabela do jsPDF
       const linhasTabela = this.relatorio.map(item => [
         item.nome_tipo,
         item.total_emitidas.toString(),
         item.total_atendidas.toString()
       ]);
 
-      // Inserindo a linha final de Totais
       linhasTabela.push([
         'TOTAL',
         this.calcularTotalEmitidas().toString(),
         this.calcularTotalAtendidas().toString()
       ]);
 
-      // Renderizando a tabela no arquivo
       autoTable(doc, {
         startY: 40,
         head: [['Tipo de Senha', 'Emitidas', 'Atendidas']],
@@ -289,7 +295,6 @@ export class RelatoriosPage implements OnInit {
         theme: 'striped',
         headStyles: { fillColor: [56, 128, 255] },
         didParseCell: (data) => {
-          // Destaca visualmente a última linha (a de Totais)
           if (data.row.index === linhasTabela.length - 1) {
             data.cell.styles.fontStyle = 'bold';
             data.cell.styles.fillColor = [240, 240, 240];
@@ -297,7 +302,6 @@ export class RelatoriosPage implements OnInit {
         }
       });
 
-      // Baixa o arquivo gerado
       doc.save(`relatorio_${this.tipoRelatorio}_${new Date().getTime()}.pdf`);
       this.mostrarToast('PDF baixado com sucesso!');
     } catch (error) {

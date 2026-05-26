@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController, AlertController, ToastController } from '@ionic/angular';
+import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -15,26 +15,16 @@ import { environment } from '../../../environments/environment';
 })
 export class LoginPage implements OnInit {
   
-  // Dados de Login
-  user = { 
-    email: '', 
-    password: '' 
-  };
-  
-  // Controle de Visibilidade da Senha
+  user = { email: '', password: '' };
   showPassword = false;
   passwordToggleIcon = 'eye-outline';
-
-  // Controle do Modal de Recuperação
   isModalOpen = false;
   emailRecuperacao = '';
-  
   returnUrl: string = '/home';
 
   constructor(
     private http: HttpClient,
     private navCtrl: NavController,
-    private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private route: ActivatedRoute
   ) {}
@@ -43,25 +33,19 @@ export class LoginPage implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
   }
 
-  /**
-   * ALTERNAR VISIBILIDADE DA SENHA
-   */
   togglePassword() {
     this.showPassword = !this.showPassword;
     this.passwordToggleIcon = this.showPassword ? 'eye-off-outline' : 'eye-outline';
   }
 
-  /**
-   * EFETUAR LOGIN
-   */
   async login() {
     if (!this.user.email || !this.user.password) {
       this.mostrarToast('Por favor, preencha todos os campos.');
       return;
     }
 
-    // Atalho rápido para testes (opcional)
     if (this.user.email === 'admin' && this.user.password === 'Admin@123') {
+      sessionStorage.setItem('usuario', JSON.stringify({ email: 'admin' }));
       sessionStorage.setItem('usuarioLogado', 'true');
       this.navCtrl.navigateRoot(this.returnUrl);
       return;
@@ -69,7 +53,10 @@ export class LoginPage implements OnInit {
 
     this.http.post(`${environment.apiUrl}/api/auth/login`, this.user).subscribe({
       next: (res: any) => {
+        // CORREÇÃO: Salvando o e-mail no sessionStorage para permitir deleção futura
+        sessionStorage.setItem('usuario', JSON.stringify({ email: this.user.email }));
         sessionStorage.setItem('usuarioLogado', 'true');
+        
         if (res.token) {
           sessionStorage.setItem('userToken', res.token);
         }
@@ -83,17 +70,11 @@ export class LoginPage implements OnInit {
     });
   }
 
-  /**
-   * CONTROLE DO MODAL DE RECUPERAÇÃO
-   */
   setOpen(isOpen: boolean) {
     this.isModalOpen = isOpen;
-    if (!isOpen) this.emailRecuperacao = ''; // Limpa o campo ao fechar
+    if (!isOpen) this.emailRecuperacao = '';
   }
 
-  /**
-   * ENVIAR E-MAIL DE RECUPERAÇÃO (CHAMA O BACK-END)
-   */
   enviarEmail() {
     if (!this.emailRecuperacao || !this.emailRecuperacao.includes('@')) {
       this.mostrarToast('Por favor, insira um e-mail válido.');
@@ -107,14 +88,12 @@ export class LoginPage implements OnInit {
           this.setOpen(false);
         },
         error: (err) => {
-          console.error('Erro na recuperação:', err);
-          const msg = err.error?.error || 'E-mail não encontrado ou erro no servidor.';
+          const msg = err.error?.error || 'Erro ao processar recuperação.';
           this.mostrarToast(msg);
         }
       });
   }
 
-  // Navegação
   criarConta() {
     this.navCtrl.navigateForward('/signup');
   }
@@ -124,8 +103,7 @@ export class LoginPage implements OnInit {
       message: msg,
       duration: 3000,
       position: 'bottom',
-      color: 'dark',
-      buttons: [{ text: 'OK', role: 'cancel' }]
+      color: 'dark'
     });
     await toast.present();
   }

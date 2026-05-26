@@ -69,6 +69,7 @@ O servidor estará disponível em `http://localhost:3000`.
 
    ```bash
    npm install
+   npm install jspdf jspdf-autotable
    ```
 
 3. Inicie o servidor de desenvolvimento:

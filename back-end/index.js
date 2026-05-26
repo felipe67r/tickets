@@ -7,8 +7,9 @@ import painelRoutes from './routes/painel.routes.js';
 import relatorioRoutes from './routes/relatorio.routes.js';
 import senhaRoutes from './routes/senha.routes.js'; 
 import { login, register, recuperarSenha, } from './controllers/auth.controller.js';
-import { listarBackups, baixarBackup, backupManual, agendarHorarioManual } from './controllers/backup.controller.js';
+import { listarBackups, baixarBackup, backupManual, agendarHorarioManual, restaurarUltimoBackup, restoreBackup } from './controllers/backup.controller.js';
 import { iniciarAgendamento } from './config/scheduler.js';
+import { deletarContaUsuario } from './controllers/backup.controller.js';
 
 const app = express();
 
@@ -16,9 +17,8 @@ app.post('/testelogin', (req, res) => {
     res.json({ message: 'Conectado ao backend!' });
 });
 
-// Configuração do CORS
 app.use(cors({
-  origin:  '*', // Em produção, mude para o IP do seu front-end
+  origin:  '*', 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Content-Disposition'],
@@ -36,9 +36,11 @@ app.get('/debug-db', (req, res) => {
 });
 
 app.get('/api/backups/lista', listarBackups);
+app.post('/api/backups/restaurar-ultimo', restaurarUltimoBackup);
 app.get('/api/backups/download/:nome', baixarBackup);
 app.post('/api/backups/manual', backupManual);
 app.post('/api/backups/agendar', agendarHorarioManual);
+app.post('/api/backups/restore', restoreBackup);
 app.use('/api/atendimento', atendimentoRoutes); 
 app.use('/api/painel', painelRoutes);
 app.use('/api/relatorio', relatorioRoutes);
@@ -46,17 +48,16 @@ app.use('/api/senha', senhaRoutes);
 app.post('/api/auth/login', login);
 app.post('/api/auth/recuperar', recuperarSenha);
 app.post('/api/user/register', register);
+app.post('/api/usuarios/deletar', deletarContaUsuario);
 
-// Configuração da Porta
 const PORT = 3000;
 
-// Carrega os certificados SSL gerados
+
 const sslOptions = {
   key: fs.readFileSync('/tickets-main/certs/server.key'),
   cert: fs.readFileSync('/tickets-main/certs/server.crt')
 };
 
-// Cria o servidor HTTPS usando a sintaxe nativa de ES Modules
 https.createServer(sslOptions, app).listen(PORT, '0.0.0.0', () => {
   console.log('--------------------------------------------------');
   console.log(`🔒 Servidor SEGURO rodando via HTTPS na porta ${PORT}`);

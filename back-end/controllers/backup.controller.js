@@ -4,28 +4,23 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { logBackupRealizado } from '../logger.js';
 
-// Configuração do Banco de Dados
 const dbConfig = {
   user: 'adm_db',
   password: 'admin',
   database: 'sistema'  
 };
 
-// --- CONFIGURAÇÃO DE CAMINHOS (IMPORTANTE PARA LINUX/VM) ---
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define a pasta de backups na raiz do projeto (um nível acima de controllers)
 const backupDir = path.resolve(__dirname, '../backups');
 
-// Caminho do executável no Debian (confirmado via 'which mysqldump')
 const MYSQLDUMP_PATH = '/usr/bin/mysqldump';
 const MYSQL_PATH = '/usr/bin/mysql';
 
-// 1. LISTAR BACKUPS
 export const listarBackups = (req, res) => {
   try {
-    // Cria a pasta se ela não existir
     if (!fs.existsSync(backupDir)) {
       fs.mkdirSync(backupDir, { recursive: true });
     }
@@ -50,7 +45,6 @@ export const listarBackups = (req, res) => {
   }
 };
 
-// 2. DOWNLOAD DE BACKUP
 export const baixarBackup = (req, res) => {
   const fileName = req.params.nome;
   const filePath = path.join(backupDir, fileName);
@@ -62,20 +56,16 @@ export const baixarBackup = (req, res) => {
   }
 };
 
-// 3. GERAR BACKUP MANUAL (E AGENDADO)
 export const backupManual = (req, res) => {
-  // Gera nome único com timestamp
   const now = new Date();
   const timestamp = now.toISOString().replace(/[:.]/g, '-').split('T');
   const fileName = `backup_${timestamp[0]}_${timestamp[1].slice(0, 5)}.sql`;
   const backupPath = path.join(backupDir, fileName);
 
-  // Garante existência da pasta
   if (!fs.existsSync(backupDir)) {
     fs.mkdirSync(backupDir, { recursive: true });
   }
 
-  // Comando formatado para Debian (senha entre aspas simples para evitar erro de caracteres especiais)
   const cmd = `${MYSQLDUMP_PATH} -u ${dbConfig.user} -p'${dbConfig.password}' ${dbConfig.database} > "${backupPath}"`;
 
   exec(cmd, (error, stdout, stderr) => {
@@ -85,21 +75,19 @@ export const backupManual = (req, res) => {
       return;
     }
 
-    // Verificação de segurança: O ficheiro existe e tem conteúdo?
     setTimeout(() => {
       if (fs.existsSync(backupPath)) {
         console.log(`✅ Backup concluído com sucesso: ${fileName}`);
         logBackupRealizado('Sistema', fileName);
         if (res) res.status(200).json({ message: 'Backup realizado!', arquivo: fileName });
       } else {
-        console.error('❌ Erro: O comando rodou mas o ficheiro não foi encontrado em:', backupPath);
+        console.error('❌ Erro: Ficheiro não encontrado em:', backupPath);
         if (res) res.status(500).json({ error: 'Ficheiro não gerado no disco.' });
       }
     }, 500);
   });
 };
 
-// 4. RESTAURAR BACKUP
 export const restoreBackup = (req, res) => {
   const { arquivo } = req.body;
 
@@ -125,10 +113,55 @@ export const restoreBackup = (req, res) => {
   });
 };
 
-// No final do seu backup.controller.js
+export const restaurarUltimoBackup = (req, res) => {
+  try {
+    // Garante que a pasta existe antes de tentar ler
+    if (!fs.existsSync(backupDir)) {
+      return res.status(404).json({ error: 'Nenhum backup encontrado (pasta inexistente).' });
+    }
+
+    const arquivos = fs.readdirSync(backupDir).filter(file => file.endsWith('.sql'));
+
+    if (arquivos.length === 0) {
+      return res.status(404).json({ error: 'Nenhum arquivo de backup (.sql) encontrado para restauração.' });
+    }
+
+    const backupsOrdenados = arquivos
+      .map(file => {
+        return {
+          nome: file,
+          caminhoCompleto: path.join(backupDir, file),
+          dataAlteracao: fs.statSync(path.join(backupDir, file)).mtime
+        };
+      })
+      .sort((a, b) => b.dataAlteracao.getTime() - a.dataAlteracao.getTime()); // O mais recente fica na posição [0]
+
+    const ultimoBackup = backupsOrdenados[0];
+    console.log(`🔄 Iniciando restauração automática do último backup: ${ultimoBackup.nome}`);
+
+    const cmd = `${MYSQL_PATH} -u ${dbConfig.user} -p'${dbConfig.password}' ${dbConfig.database} < "${ultimoBackup.caminhoCompleto}"`;
+
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.error('❌ ERRO NA RESTAURAÇÃO AUTOMÁTICA:', stderr);
+        return res.status(500).json({ error: 'Erro ao aplicar o último backup.', details: stderr });
+      }
+      
+      console.log(`✅ Banco de dados atualizado com sucesso para a versão de: ${ultimoBackup.nome}`);
+      res.status(200).json({ 
+        message: 'O último backup disponível foi restaurado com sucesso!', 
+        arquivoAplicado: ultimoBackup.nome 
+      });
+    });
+
+  } catch (err) {
+    console.error('🔥 Erro crítico na restauração automática:', err);
+    res.status(500).json({ error: 'Erro interno ao processar a busca do último backup.' });
+  }
+};
 
 export const agendarHorarioManual = (req, res) => {
-  const { hora, minuto, frequencia } = req.body; // frequencia: 'diario', 'semanal' ou 'mensal'
+  const { hora, minuto, frequencia } = req.body; 
   const configPath = path.join(process.cwd(), 'config', 'agendamento.json');
 
   try {
@@ -148,4 +181,26 @@ export const agendarHorarioManual = (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Erro ao salvar configuração." });
   }
+};
+
+export const deletarContaUsuario = (req, res) => {
+  const { email } = req.body; // Mudamos de id para email
+
+  if (!email) {
+    return res.status(400).json({ error: 'E-mail do usuário não foi informado.' });
+  }
+
+  const querySql = `DELETE FROM usuarios WHERE email = '${email}';`;
+
+  const cmd = `${MYSQL_PATH} -u ${dbConfig.user} -p'${dbConfig.password}' ${dbConfig.database} -e "${querySql}"`;
+
+  exec(cmd, (error, stdout, stderr) => {
+    if (error) {
+      console.error('❌ ERRO AO DELETAR:', stderr);
+      return res.status(500).json({ error: 'Erro ao excluir conta.', details: stderr });
+    }
+    
+    console.log(`🗑️ Conta com e-mail ${email} deletada com sucesso.`);
+    res.status(200).json({ message: 'Sua conta foi excluída com sucesso.' });
+  });
 };

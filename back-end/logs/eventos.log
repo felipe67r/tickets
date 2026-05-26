@@ -1,0 +1,42 @@
+[25/05/2026, 10:34:26] LOGIN_SUCESSO             | Usuário: Abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[25/05/2026, 10:35:04] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SP | Código: 260525-SP001
+[25/05/2026, 10:35:07] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SG | Código: 260525-SG001
+[25/05/2026, 10:35:09] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SE | Código: 260525-SE001
+[25/05/2026, 10:35:49] SENHA_CHAMADA             | Usuário: Guichê 1                            | Descrição: Senha 260519-SP002 chamada para o Guichê 1
+[25/05/2026, 10:36:04] SENHA_CHAMADA             | Usuário: Guichê 2                            | Descrição: Senha 260525-SE001 chamada para o Guichê 2
+[25/05/2026, 10:36:07] SENHA_CHAMADA             | Usuário: Guichê 3                            | Descrição: Senha 260525-SP001 chamada para o Guichê 3
+[25/05/2026, 10:36:11] SENHA_CHAMADA             | Usuário: Guichê 4                            | Descrição: Senha 260525-SG001 chamada para o Guichê 4
+[25/05/2026, 10:36:38] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[25/05/2026, 10:37:06] BACKUP_REALIZADO          | Usuário: Sistema                             | Descrição: Backup gerado com sucesso: backup_2026-05-25_13-37.sql
+[25/05/2026, 13:53:04] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[25/05/2026, 13:59:35] BACKUP_REALIZADO          | Usuário: Sistema                             | Descrição: Backup gerado com sucesso: backup_2026-05-25_16-59.sql
+[25/05/2026, 14:24:58] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:25:22] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:25:47] ERRO_AUTH                 | Usuário: abcd@gmail.com                      | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:25:52] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:27:18] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:27:26] ERRO_AUTH                 | Usuário: abcd@gmail.com                      | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:27:59] ERRO_AUTH                 | Usuário: abc@gmail.com                       | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:28:19] ERRO_AUTH                 | Usuário: Abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:29:47] ERRO_AUTH                 | Usuário: Jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:30:05] ERRO_AUTH                 | Usuário: Jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:30:17] ERRO_AUTH                 | Usuário: Jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:30:21] ERRO_AUTH                 | Usuário: Jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:30:30] ERRO_AUTH                 | Usuário: Jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:30:30] BLOQUEIO                  | Usuário: Jonatas2044@gmail.com               | Descrição: Usuário bloqueado por 10 minutos após 5 falhas consecutivas de autenticação
+[25/05/2026, 14:30:55] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:30:55] BLOQUEIO                  | Usuário: abcde@gmail.com                     | Descrição: Usuário bloqueado por 10 minutos após 5 falhas consecutivas de autenticação
+[25/05/2026, 14:31:08] ERRO_AUTH                 | Usuário: abcd@gmail.com                      | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:31:16] ERRO_AUTH                 | Usuário: Abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:31:22] ERRO_AUTH                 | Usuário: Abc@gmail.com                       | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:32:46] ERRO_AUTH                 | Usuário: jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:32:55] ERRO_AUTH                 | Usuário: jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:33:01] ERRO_AUTH                 | Usuário: jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:33:07] ERRO_AUTH                 | Usuário: jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:33:10] ERRO_AUTH                 | Usuário: jonatas2044@gmail.com               | Descrição: Tentativa de login com credenciais inválidas
+[25/05/2026, 14:33:10] BLOQUEIO                  | Usuário: jonatas2044@gmail.com               | Descrição: Usuário bloqueado por 10 minutos após 5 falhas consecutivas de autenticação
+[25/05/2026, 14:35:11] CADASTRO                  | Usuário: abcde@gmail.com                     | Descrição: Novo usuário cadastrado com sucesso
+[25/05/2026, 14:35:40] CADASTRO                  | Usuário: abcd@gmail.com                      | Descrição: Novo usuário cadastrado com sucesso
+[25/05/2026, 14:35:44] LOGIN_SUCESSO             | Usuário: abcd@gmail.com                      | Descrição: Login realizado com sucesso
+[25/05/2026, 22:39:41] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[25/05/2026, 23:17:12] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso

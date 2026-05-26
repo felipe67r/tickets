@@ -8,12 +8,12 @@ import { UserService } from '../../services/user.service';
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
-  standalone: true, // Adicionado para indicar que é Standalone
+  standalone: true,
   imports: [
     CommonModule, 
     FormsModule, 
     IonicModule
-  ] // Importações necessárias para as tags ion- e o ngModel funcionarem
+  ]
 })
 export class ProfilePage implements OnInit {
   
@@ -78,14 +78,28 @@ export class ProfilePage implements OnInit {
   }
 
   private deleteAccount() {
-    this.userService.deleteUser().subscribe({
-      next: async () => {
-        sessionStorage.clear(); 
-        this.navCtrl.navigateRoot('/login'); 
-      },
-      error: (err) => {
-        console.error('Erro ao excluir conta', err);
-      }
-    });
-  }
+  this.userService.deleteUser().subscribe({
+    next: async () => {
+      const toast = await this.toastController.create({
+        message: 'Sua conta foi excluída com sucesso.',
+        duration: 2000,
+        color: 'success'
+      });
+      await toast.present();
+
+      sessionStorage.clear(); 
+      this.navCtrl.navigateRoot('/login'); 
+    },
+    error: async (err) => {
+      console.error('Erro ao excluir conta', err);
+      
+      const toast = await this.toastController.create({
+        message: err.error?.error || 'Não foi possível excluir sua conta no momento.',
+        duration: 3000,
+        color: 'danger'
+      });
+      await toast.present();
+    }
+  });
+}
 }
