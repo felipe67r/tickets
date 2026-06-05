@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
-// Regex: Min 8 chars, 1 Maiúscula, 1 Minúscula, 1 Número, 1 Especial
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+// Regex: Min 10 chars, 1 Maiúscula, 1 Minúscula, 1 Número, 1 Especial
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
 
 module.exports = {
   async store(req, res) {

@@ -46,7 +46,7 @@ function limpaFalhas(email) {
 
 // ─── AUXILIARES DE SEGURANÇA DA SENHA ────────────────────────────────────────
 const validarPoliticaSenha = (senha) => {
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{10,}$/;
   return regex.test(senha);
 };
 

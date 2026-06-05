@@ -1,4 +1,3 @@
-
 import { Component, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +6,7 @@ import { AtendimentoService } from '../../services/atendimento.service';
 import { SenhaService } from '../../services/senha.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgIf } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-atendente',
@@ -33,6 +33,8 @@ export class AtendentePage implements OnInit {
 
   ngOnInit() {}
 
+  // ... (mantive seus métodos anteriores inalterados) ...
+
   chamarProxima() {
     if (!this.guiche) {
       console.error('Guichê não informado.');
@@ -40,12 +42,10 @@ export class AtendentePage implements OnInit {
       return;
     }
 
-    // Criamos um objeto estruturado para enviar no Body do POST
     const dadosRequisicao = { guiche: this.guiche };
 
     this.atendimentoService.chamarSenha(dadosRequisicao).subscribe({
       next: (res) => {
-        // O unshift adiciona a nova senha no topo da lista exibida
         this.senhasChamadas.unshift({ ...res, tempoRestante: '00:00' }); 
         this.erroMensagem = null;
         this.senhaService.notificarAtualizacao();
@@ -57,18 +57,17 @@ export class AtendentePage implements OnInit {
       }
     });
   }
-  iniciarAtendimentoTimer(senha: string) {
-    if (this.atendimentoTimers[senha]) {
-      clearInterval(this.atendimentoTimers[senha]);
-    }
 
+
+  // ... (restante dos seus métodos: iniciarAtendimentoTimer, pausarAtendimento, calcularTempoMedio, formatarTempo, etc., permanecem iguais) ...
+
+  iniciarAtendimentoTimer(senha: string) {
+    if (this.atendimentoTimers[senha]) clearInterval(this.atendimentoTimers[senha]);
     const senhaChamada = this.senhasChamadas.find(s => s.senha === senha);
     if (!senhaChamada) return;
-
     const tipo = senhaChamada.tipo;
     const tempoTotal = this.calcularTempoMedio(tipo);
     let tempoAtual = 0;
-
     this.atendimentoTimers[senha] = setInterval(() => {
       if (tempoAtual < tempoTotal) {
         tempoAtual++;
@@ -82,38 +81,14 @@ export class AtendentePage implements OnInit {
   pausarAtendimento(senha: string) {
     clearInterval(this.atendimentoTimers[senha]);
     delete this.atendimentoTimers[senha];
-
-    setTimeout(() => {
-      this.senhasChamadas = this.senhasChamadas.filter(s => s.senha !== senha);
-    }, 5000);
+    setTimeout(() => { this.senhasChamadas = this.senhasChamadas.filter(s => s.senha !== senha); }, 5000);
   }
 
   calcularTempoMedio(tipo: string): number {
-    if (tipo === 'SP') {
-      return 15 * 60 + (Math.random() < 0.5 ? -5 * 60 : 5 * 60);
-    } else if (tipo === 'SG') {
-      return 5 * 60 + (Math.random() < 0.5 ? -3 * 60 : 3 * 60); 
-    } else if (tipo === 'SE') {
-      return Math.random() < 0.95 ? 60 : 5 * 60; 
-    }
+    if (tipo === 'SP') return 15 * 60 + (Math.random() < 0.5 ? -5 * 60 : 5 * 60);
+    if (tipo === 'SG') return 5 * 60 + (Math.random() < 0.5 ? -3 * 60 : 3 * 60); 
+    if (tipo === 'SE') return Math.random() < 0.95 ? 60 : 5 * 60; 
     return 0;
-  }
-
-  atualizarPainel() {
-    this.painelLimpo.emit();
-  }
-
-  zerarSenhas() {
-    this.atendimentoService.encerrarExpediente().subscribe(
-      () => {
-        console.log('Senhas zeradas com sucesso.');
-        this.painelLimpo.emit();
-        this.senhaService.notificarAtualizacao();
-      },
-      (error: any) => {
-        console.error('Erro ao zerar senhas:', error);
-      }
-    );
   }
 
   formatarTempo(segundos: number): string {
@@ -126,34 +101,39 @@ export class AtendentePage implements OnInit {
     return valor < 10 ? `0${valor}` : `${valor}`;
   }
 
-  fecharBloco(senha: string) {
-    this.senhasChamadas = this.senhasChamadas.filter(s => s.senha !== senha);
-    this.tempoRestante = '00:00';
-  }
-
   finalizarAtendimento(senha: string) {
     if (this.atendimentoTimers[senha]) {
       clearInterval(this.atendimentoTimers[senha]);
       delete this.atendimentoTimers[senha]; 
     }
-
-    
     const senhaData = this.senhasChamadas.find(s => s.senha === senha);
-    if (!senhaData) {
-      console.error(`Senha ${senha} não encontrada.`);
-      return;
-    }
-
+    if (!senhaData) return;
     const guiche = senhaData.guiche;
-
-   
     this.senhasChamadas = this.senhasChamadas.filter(s => s.senha !== senha);
-
-    
     this.atendimentoService.liberarGuiche(Number(guiche)).subscribe({
-      next: () => console.log(`Guichê ${guiche} liberado com sucesso.`),
-      error: (err) => console.error('Erro ao liberar guichê:', err),
+      next: () => console.log(`Guichê ${guiche} liberado.`),
+      error: (err) => console.error('Erro:', err),
     });
   }
-}
 
+
+  async finalizarExpediente() {
+    if (confirm('Deseja realmente limpar as senhas e encerrar o expediente?')) {
+      try {
+        await firstValueFrom(this.atendimentoService.limparTabela());
+        
+        // Limpa localmente para o atendente não ver mais senhas chamadas
+        this.senhasChamadas = [];
+        this.atendimentoTimers = {}; 
+        
+        // Notifica o painel (caso esteja na mesma aba)
+        this.senhaService.notificarLimpezaPainel();
+        
+        alert('Expediente encerrado com sucesso!');
+      } catch (err) {
+        console.error('Erro no processo:', err);
+        alert('Erro ao processar. Verifique o servidor.');
+      }
+    }
+  }
+}

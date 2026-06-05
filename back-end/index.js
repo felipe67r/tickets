@@ -54,8 +54,8 @@ const PORT = 3000;
 
 
 const sslOptions = {
-  key: fs.readFileSync('/tickets-main/certs/server.key'),
-  cert: fs.readFileSync('/tickets-main/certs/server.crt')
+  key: fs.readFileSync('/home/tickets-server/tickets/certs/server.key'),
+  cert: fs.readFileSync('/home/tickets-server/tickets/certs/server.crt')
 };
 
 https.createServer(sslOptions, app).listen(PORT, '0.0.0.0', () => {

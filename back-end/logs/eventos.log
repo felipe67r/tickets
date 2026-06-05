@@ -40,3 +40,52 @@
 [25/05/2026, 14:35:44] LOGIN_SUCESSO             | Usuário: abcd@gmail.com                      | Descrição: Login realizado com sucesso
 [25/05/2026, 22:39:41] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
 [25/05/2026, 23:17:12] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[02/06/2026, 00:07:28] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SP | Código: 260602-SP001
+[02/06/2026, 00:07:29] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SP | Código: 260602-SP002
+[02/06/2026, 00:07:36] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SG | Código: 260602-SG001
+[02/06/2026, 00:07:39] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SE | Código: 260602-SE001
+[02/06/2026, 00:07:59] SENHA_CHAMADA             | Usuário: Guichê 1                            | Descrição: Senha 260602-SP001 chamada para o Guichê 1
+[02/06/2026, 00:08:03] SENHA_CHAMADA             | Usuário: Guichê 2                            | Descrição: Senha 260602-SE001 chamada para o Guichê 2
+[02/06/2026, 00:08:07] SENHA_CHAMADA             | Usuário: Guichê 3                            | Descrição: Senha 260602-SP002 chamada para o Guichê 3
+[02/06/2026, 00:08:19] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[02/06/2026, 00:08:23] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[02/06/2026, 00:08:58] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[02/06/2026, 00:11:07] CADASTRO                  | Usuário: abcde@gmail.com                     | Descrição: Novo usuário cadastrado com sucesso
+[02/06/2026, 00:11:19] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[02/06/2026, 00:12:16] BACKUP_REALIZADO          | Usuário: Sistema                             | Descrição: Backup gerado com sucesso: backup_2026-06-02_03-12.sql
+[02/06/2026, 00:13:42] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[03/06/2026, 22:50:14] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SP | Código: 260603-SP001
+[03/06/2026, 22:50:18] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SG | Código: 260603-SG001
+[03/06/2026, 22:50:21] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SE | Código: 260603-SE001
+[03/06/2026, 22:50:30] SENHA_CHAMADA             | Usuário: Guichê 1                            | Descrição: Senha 260603-SP001 chamada para o Guichê 1
+[03/06/2026, 22:50:34] SENHA_CHAMADA             | Usuário: Guichê 2                            | Descrição: Senha 260603-SE001 chamada para o Guichê 2
+[03/06/2026, 22:50:38] SENHA_CHAMADA             | Usuário: Guichê 3                            | Descrição: Senha 260603-SG001 chamada para o Guichê 3
+[03/06/2026, 22:51:12] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 22:51:19] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 22:53:42] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[03/06/2026, 22:54:04] CADASTRO                  | Usuário: abcde@gmail.com                     | Descrição: Novo usuário cadastrado com sucesso
+[03/06/2026, 22:54:20] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[03/06/2026, 22:54:32] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 22:54:37] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 22:54:37] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 22:54:37] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 22:54:38] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 23:12:56] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SG | Código: 260603-SG002
+[03/06/2026, 23:12:59] SENHA_EMITIDA             | Usuário: Sistema (Totem)                     | Descrição: Nova senha emitida - Tipo: SP | Código: 260603-SP002
+[03/06/2026, 23:13:05] SENHA_CHAMADA             | Usuário: Guichê 1                            | Descrição: Senha 260603-SP002 chamada para o Guichê 1
+[03/06/2026, 23:13:10] SENHA_CHAMADA             | Usuário: Guichê 2                            | Descrição: Senha 260603-SG002 chamada para o Guichê 2
+[03/06/2026, 23:13:21] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 23:17:29] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 23:26:19] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 23:37:19] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[03/06/2026, 23:48:37] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[04/06/2026, 20:32:22] ATENDIMENTO_ENCERRADO     | Usuário: Administrador                       | Descrição: Todas as senhas do dia foram encerradas
+[04/06/2026, 21:05:45] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[04/06/2026, 21:22:59] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[04/06/2026, 21:45:30] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[04/06/2026, 21:45:47] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[04/06/2026, 21:46:21] ERRO_AUTH                 | Usuário: abcde@gmail.com                     | Descrição: Tentativa de login com credenciais inválidas
+[04/06/2026, 21:47:27] CADASTRO                  | Usuário: abcde@gmail.com                     | Descrição: Novo usuário cadastrado com sucesso
+[04/06/2026, 21:47:30] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[04/06/2026, 22:24:17] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[04/06/2026, 22:30:23] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso

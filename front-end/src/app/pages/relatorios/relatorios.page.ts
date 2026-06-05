@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { SenhaService } from 'src/app/services/senha.service';
 
 @Component({
   selector: 'app-relatorios',
@@ -29,7 +30,8 @@ export class RelatoriosPage implements OnInit {
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private navCtrl: NavController 
+    private navCtrl: NavController,
+    private senhaService: SenhaService
   ) {}
 
   ngOnInit() {}
@@ -113,23 +115,16 @@ export class RelatoriosPage implements OnInit {
   }
 
   async executarRestore(nomeArquivo: string) {
-    const loading = await this.loadingCtrl.create({ message: 'Processando restauração do banco...' });
-    await loading.present();
-
-    this.http.post(`${environment.apiUrl}/api/backups/restore`, { arquivo: nomeArquivo }).subscribe({
-      next: (res: any) => {
-        loading.dismiss();
-        this.mostrarToast(res.message || 'Banco de dados restaurado com sucesso!');
-        this.fecharRelatorio(); 
-      },
-      error: (err) => {
-        loading.dismiss();
-        console.error('Erro no restore:', err);
-        const msg = err.error?.error || 'Erro ao aplicar o backup selecionado.';
-        this.mostrarToast(msg);
-      }
-    });
-  }
+  this.http.post(`${environment.apiUrl}/api/backups/restore`, { arquivo: nomeArquivo }).subscribe({
+    next: (res: any) => {
+      // Avisa todas as abas que o Painel deve ser destravado
+      localStorage.setItem('painel_destravado', 'true');
+      
+      this.mostrarToast('Restore concluído! Painel destravado.');
+      this.fecharRelatorio(); 
+    }
+  });
+}
 
   async solicitarFrequencia() {
     const alert = await this.alertCtrl.create({

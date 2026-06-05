@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class AtendimentoService {
-  private apiUrl = `${environment.apiUrl}/api/atendimento`;
+private apiUrl = `${environment.apiUrl}/api/atendimento`;
 
   constructor(private http: HttpClient) {}
 
@@ -52,4 +52,12 @@ export class AtendimentoService {
       })
     );
   }
+
+   limparTabela(): Observable<any> {
+  return this.http.post<any>(`${this.apiUrl}/acao/limpar-banco`, {});
+}
+
+fazerBackupManual(): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/relatorios/backup/manual`);
+}
 }

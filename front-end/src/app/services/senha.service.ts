@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
@@ -8,12 +8,25 @@ import { catchError, timeout } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class SenhaService {
+
+  private limparPainelSource = new Subject<void>();
+  limparPainel$ = this.limparPainelSource.asObservable();
+  private painelDestravado = new Subject<void>();
+  public painelDestravado$ = this.painelDestravado.asObservable();
   private atualizacaoSenhas = new Subject<void>();
   private apiUrlBase = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) { }
 
-  // --- MÉTODOS PARA O TOTEM ---
+  notificarLimpezaPainel() {
+    this.limparPainelSource.next();
+  }
+
+  // AJUSTADO: Dispara o destravamento e a atualização em sequência
+  notificarRestore() {
+    this.painelDestravado.next();
+    this.atualizacaoSenhas.next();
+  }
 
   emitirSenha(tipo: string): Observable<any> {
     // URL: http://10.10.0.138:3000/api/senha/emitir
@@ -29,7 +42,13 @@ export class SenhaService {
   // --- MÉTODOS PARA O PAINEL ---
 
   getUltimasSenhas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrlBase}/painel/ultimas`).pipe(
+    const headers = new HttpHeaders({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+
+    return this.http.get<any[]>(`${this.apiUrlBase}/painel/ultimas`, { headers }).pipe(
       catchError((error) => {
         console.error('Erro ao carregar últimas senhas:', error);
         return throwError(() => new Error('Erro ao carregar lista do painel.'));
