@@ -6,6 +6,7 @@ import atendimentoRoutes from './routes/atendimento.routes.js';
 import painelRoutes from './routes/painel.routes.js';
 import relatorioRoutes from './routes/relatorio.routes.js';
 import senhaRoutes from './routes/senha.routes.js'; 
+import { update, remove } from './controllers/user.controller.js';
 import { login, register, recuperarSenha, } from './controllers/auth.controller.js';
 import { listarBackups, baixarBackup, backupManual, agendarHorarioManual, restaurarUltimoBackup, restoreBackup } from './controllers/backup.controller.js';
 import { iniciarAgendamento } from './config/scheduler.js';
@@ -47,6 +48,7 @@ app.use('/api/relatorio', relatorioRoutes);
 app.use('/api/senha', senhaRoutes); 
 app.post('/api/auth/login', login);
 app.post('/api/auth/recuperar', recuperarSenha);
+app.put('/api/user/update', update);
 app.post('/api/user/register', register);
 app.post('/api/usuarios/deletar', deletarContaUsuario);
 

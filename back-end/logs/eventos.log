@@ -89,3 +89,11 @@
 [04/06/2026, 21:47:30] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
 [04/06/2026, 22:24:17] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
 [04/06/2026, 22:30:23] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[06/06/2026, 12:46:04] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[06/06/2026, 13:32:42] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso
+[06/06/2026, 13:42:50] CADASTRO                  | Usuário: abc@gmail.com                       | Descrição: Novo usuário cadastrado com sucesso
+[06/06/2026, 13:45:04] CADASTRO                  | Usuário: ace@gmail.com                       | Descrição: Novo usuário cadastrado com sucesso
+[06/06/2026, 13:47:07] ERRO_AUTH                 | Usuário: abcd@gmail.com                      | Descrição: Tentativa de login com credenciais inválidas
+[06/06/2026, 13:47:22] LOGIN_SUCESSO             | Usuário: abc@gmail.com                       | Descrição: Login realizado com sucesso
+[06/06/2026, 13:48:10] LOGIN_SUCESSO             | Usuário: ace@gmail.com                       | Descrição: Login realizado com sucesso
+[06/06/2026, 13:48:29] LOGIN_SUCESSO             | Usuário: abcde@gmail.com                     | Descrição: Login realizado com sucesso

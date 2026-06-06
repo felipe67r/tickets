@@ -29,7 +29,7 @@ export class SignupPage implements OnInit {
     // Atualizado com a nova Regex da política de senha
     senha: ['', [
       Validators.required, 
-      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/)
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{10,}$/)
     ]]
   });
 }

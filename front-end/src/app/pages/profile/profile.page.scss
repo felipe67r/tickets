@@ -1,0 +1,27 @@
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  margin-bottom: 7px;
+  padding-left: 15px;
+
+  &.danger {
+    color: var(--ion-color-danger);
+  }
+}
+
+.divider-space {
+  height: 40px; // Espaçamento grande para separar as seções
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 30px;
+}
+
+// Melhorando o visual dos inputs
+ion-item {
+  --background: #fcfcfc;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  --padding-start: 10px;
+}

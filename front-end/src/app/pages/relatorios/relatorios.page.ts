@@ -243,7 +243,7 @@ export class RelatoriosPage implements OnInit {
       error: (err) => {
         this.loading = false;
         console.error('Erro no relatório:', err);
-        this.mostrarToast('Erro ao carregar dados.');
+        this.mostrarToast('Nenhum dado encontrado para o período.');
       }
     });
   }

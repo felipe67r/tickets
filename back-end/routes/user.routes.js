@@ -7,4 +7,3 @@ router.post('/users', UserController.store); // Cadastro público
 router.put('/users', authMiddleware, UserController.update); // Alterar dados (Logado)
 router.delete('/usuarios/deletar', authMiddleware, UserController.delete); // Excluir (Logado)
 
-module.exports = router;

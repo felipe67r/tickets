@@ -23,9 +23,9 @@ export class UserService {
     return this.http.post(`${this.API}/register`, userData);
   }
 
-  updateUser(userData: any): Observable<any> {
-    return this.http.put(`${this.API}/update`, userData, this.getOptions());
-  }
+ updateUser(user: any): Observable<any> {
+  return this.http.put('/api/user/update', user); 
+}
 
   deleteUser(): Observable<any> {
   const dados = sessionStorage.getItem('usuario');
